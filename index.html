@@ -1,46 +1,138 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USA Economic Headlines - May 24, 2026</title>
+    <title>美國經濟頭條新聞 - 2026年5月24日</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #f3f4f6; }
-        .headline-card { transition: transform 0.2s; }
-        .headline-card:hover { transform: translateY(-5px); }
+        .news-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .news-card:hover { transform: translateY(-5px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+        .news-image { object-fit: cover; }
     </style>
 </head>
 <body class="text-gray-900 font-sans">
-    <div class="max-w-3xl mx-auto px-4 py-12">
-        <header class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-blue-900 mb-2">USA Economic Headlines</h1>
-            <p class="text-gray-600">Saturday, May 24, 2026</p>
-            <div class="mt-4 w-24 h-1 bg-blue-600 mx-auto"></div>
+    <div class="max-w-4xl mx-auto px-4 py-10">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-blue-900 mb-2">🇺🇸 美國經濟頭條</h1>
+            <p class="text-gray-600 text-lg">2026年5月24日 星期六</p>
+            <div class="mt-4 w-24 h-1 bg-blue-600 mx-auto rounded-full"></div>
         </header>
 
-        <div class="space-y-6">
-            <div class="headline-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-600">
-                <h2 class="text-xl font-semibold mb-2">Kevin Warsh sworn in as Fed chair as Trump seeks interest rate cuts</h2>
-                <p class="text-gray-600 mb-4">A significant shift in Federal Reserve leadership as Kevin Warsh takes the helm, with expectations of a pivot toward lower interest rates.</p>
-                <a href="https://www.cnbc.com/us-economy/" class="text-blue-600 font-medium hover:underline">Read more on CNBC &rarr;</a>
-            </div>
+        <!-- News Cards -->
+        <div class="space-y-8">
 
-            <div class="headline-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-600">
-                <h2 class="text-xl font-semibold mb-2">Warsh’s real Fed 'regime change' may happen deep inside Wall Street’s plumbing</h2>
-                <p class="text-gray-600 mb-4">Analysis of how the new Fed chair's approach could fundamentally alter the underlying mechanics of the financial system.</p>
-                <a href="https://www.cnbc.com/us-economy/" class="text-blue-600 font-medium hover:underline">Read more on CNBC &rarr;</a>
-            </div>
+            <!-- News 1 -->
+            <article class="news-card bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="md:flex">
+                    <div class="md:w-2/5">
+                        <img 
+                            src="https://images.unsplash.com/photo-1526307616774-60d0098f7642?w=600&h=400&fit=crop"
+                            alt="聯準會大樓"
+                            class="news-image w-full h-56 md:h-full"
+                        >
+                    </div>
+                    <div class="md:w-3/5 p-6">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="bg-red-100 text-red-700 text-xs font-semibold px-3 py-1 rounded-full">🔴 熱門</span>
+                            <span class="text-gray-500 text-sm">CNBC</span>
+                        </div>
+                        <h2 class="text-xl font-bold mb-3 text-gray-900 leading-tight">
+                            Kevin Warsh 就任聯準會主席 — 川普尋求降息
+                        </h2>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            川普總統在白宮主持宣誓典禮，任命 Kevin Warsh 為聯準會新任主席，這是自1987年以來首位在白宮宣誓的聯準會主席。川普表示希望利率「很快就會下降」，並稱讚 Warsh 為「偉大的聯準會領袖」。
+                        </p>
+                        <a 
+                            href="https://www.cnbc.com/2026/05/22/trump-kevin-warsh-fed-chair-interest-rates.html"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-800 hover:underline"
+                        >
+                            閱讀全文 →
+                        </a>
+                    </div>
+                </div>
+            </article>
 
-            <div class="headline-card bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-600">
-                <h2 class="text-xl font-semibold mb-2">Core Inflation Hits 3.2% as GDP Grows 2% in Q1</h2>
-                <p class="text-gray-600 mb-4">Latest reports show mixed signals with GDP growth maintaining momentum while inflation remains a key focus for policymakers.</p>
-                <a href="https://www.cnbc.com/us-economy/" class="text-blue-600 font-medium hover:underline">Read more on CNBC &rarr;</a>
-            </div>
+            <!-- News 2 -->
+            <article class="news-card bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="md:flex">
+                    <div class="md:w-2/5">
+                        <img 
+                            src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=400&fit=crop"
+                            alt="華爾街股票交易"
+                            class="news-image w-full h-56 md:h-full"
+                        >
+                    </div>
+                    <div class="md:w-3/5 p-6">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full">💹 市場</span>
+                            <span class="text-gray-500 text-sm">CNBC</span>
+                        </div>
+                        <h2 class="text-xl font-bold mb-3 text-gray-900 leading-tight">
+                            Kevin Warsh 的真正Fed「政權變革」：華爾街內部運作
+                        </h2>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            專家分析指出，Warsh 的改革可能會在華爾街的內部金融機制中產生深遠影響。他可能在滿足川普降息需求的同時，維持更嚴格的融資條件，以應對持續的通膨壓力。
+                        </p>
+                        <a 
+                            href="https://www.cnbc.com/2026/05/22/kevin-warshs-real-fed-regime-change-may-happen-deep-inside-wall-streets-plumbing.html"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-800 hover:underline"
+                        >
+                            閱讀全文 →
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- News 3 -->
+            <article class="news-card bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="md:flex">
+                    <div class="md:w-2/5">
+                        <img 
+                            src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=600&h=400&fit=crop"
+                            alt="經濟數據圖表"
+                            class="news-image w-full h-56 md:h-full"
+                        >
+                    </div>
+                    <div class="md:w-3/5 p-6">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">📊 經濟數據</span>
+                            <span class="text-gray-500 text-sm">CNBC</span>
+                        </div>
+                        <h2 class="text-xl font-bold mb-3 text-gray-900 leading-tight">
+                            核心通膨率達3.2% — 第一季GDP成長僅2%
+                        </h2>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            根據最新數據，美國3月核心PCE物價指數年增3.2%，符合預期。第一季經濟成長率為2%，低於前一季表現。個人消費支出僅增加1.6%，商品支出更微幅下滑0.1%。
+                        </p>
+                        <a 
+                            href="https://www.cnbc.com/2026/04/30/pce-inflation-rate-march-2026.html"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center gap-2 text-blue-600 font-semibold hover:text-blue-800 hover:underline"
+                        >
+                            閱讀全文 →
+                        </a>
+                    </div>
+                </div>
+            </article>
+
         </div>
 
-        <footer class="text-center mt-12 text-gray-500 text-sm">
-            <p>&copy; 2026 Economic News Aggregator | Generated by OpenClaw Tutor</p>
+        <!-- Footer -->
+        <footer class="text-center mt-12 pt-6 border-t border-gray-200">
+            <p class="text-gray-500 text-sm">
+                資料來源：CNBC、NBC News、CBS News｜更新時間：2026年5月24日
+            </p>
+            <p class="text-gray-400 text-xs mt-2">
+                由 OpenClaw Tutor 自動整理
+            </p>
         </footer>
     </div>
 </body>
