@@ -1,148 +1,108 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🏈 美式足球最新影片 - 2026年5月</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background-color: #0f172a; }
-        .video-card { transition: transform 0.3s; }
-        .video-card:hover { transform: scale(1.02); }
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 0.75rem;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>名古屋美食地圖 2026/08</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .card { @apply bg-white rounded-lg shadow hover:shadow-lg transition; padding-4; }
+    .section { @apply mb-8; }
+    .title { @apply text-2xl font-bold mb-2; }
+    .store { @apply mb-4; }
+    .store h3 { @apply text-lg font-medium; }
+  </style>
 </head>
-<body class="text-gray-100 font-sans min-h-screen">
-    <div class="max-w-5xl mx-auto px-4 py-10">
-        
-        <!-- Header -->
-        <header class="text-center mb-12">
-            <div class="text-6xl mb-4">🏈</div>
-            <h1 class="text-4xl font-bold text-white mb-2">美式足球最新影片</h1>
-            <p class="text-gray-400 text-lg">2026年5月 精選內容</p>
-            <div class="mt-4 w-24 h-1 bg-green-500 mx-auto rounded-full"></div>
-        </header>
+<body class="p-4 font-sans">
+  <h1 class="text-3xl font-bold mb-6">名古屋美食地圖 2026/08</h1>
 
-        <!-- Video Grid -->
-        <div class="space-y-10">
+  <div class="section">
+    <h2 class="text-2xl font-semibold">熱田神宮周邊</h2>
 
-            <!-- Video 1 -->
-            <article class="video-card bg-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                <div class="video-container p-4 pb-0">
-                    <iframe 
-                        src="https://www.youtube-nocookie.com/embed/f_23sVjXJYc"
-                        title="NFL 2026 Eagles Analysis"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-                    </iframe>
-                </div>
-                <div class="p-6">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="bg-red-600 text-xs font-bold px-3 py-1 rounded-full">🔥 熱門分析</span>
-                        <span class="text-gray-400 text-sm">3天前</span>
-                    </div>
-                    <h2 class="text-xl font-bold mb-2 text-white leading-tight">
-                        No One Realizes How Terrified The NFL Is Of The 2026 Eagles
-                    </h2>
-                    <p class="text-gray-400 leading-relaxed">
-                        深入分析 2025 賽季後，老鷹隊的陣容變化與未來展望。為何聯盟其他球隊都對這支球隊的潛力感到擔憂？AJ Brown 交易傳聞與球隊未來走向。
-                    </p>
-                    <a 
-                        href="https://www.youtube.com/watch?v=f_23sVjXJYc"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="inline-flex items-center gap-2 mt-4 text-green-400 hover:text-green-300 font-medium">
-                        在 YouTube 開啟 →
-                    </a>
-                </div>
-            </article>
-
-            <!-- Video 2 -->
-            <article class="video-card bg-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                <div class="video-container p-4 pb-0">
-                    <iframe 
-                        src="https://www.youtube-nocookie.com/embed/wJYtt4a1P6M"
-                        title="Aaron Rodgers Farewell Season"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-                    </iframe>
-                </div>
-                <div class="p-6">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="bg-amber-500 text-black text-xs font-bold px-3 py-1 rounded-full">👋 退休消息</span>
-                        <span class="text-gray-400 text-sm">3天前</span>
-                    </div>
-                    <h2 class="text-xl font-bold mb-2 text-white leading-tight">
-                        Aaron Rodgers 宣佈 2026 為「告別賽季」｜加入 Steelers的最後一舞
-                    </h2>
-                    <p class="text-gray-400 leading-relaxed">
-                        名人堂四分衛 Aaron Rodgers 接受 Pro Football Talk 專訪，親口證實 2026 賽季將是他的最後一季。Mike Florio 與 Chris Simms 深度分析這位傳奇四分衛的退休決定對 NFL 的影響。
-                    </p>
-                    <a 
-                        href="https://www.youtube.com/watch?v=wJYtt4a1P6M"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="inline-flex items-center gap-2 mt-4 text-green-400 hover:text-green-300 font-medium">
-                        在 YouTube 開啟 →
-                    </a>
-                </div>
-            </article>
-
-            <!-- Video 3 -->
-            <article class="video-card bg-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                <div class="video-container p-4 pb-0">
-                    <iframe 
-                        src="https://www.youtube-nocookie.com/embed/7h0UUSC2I5E"
-                        title="NFL Coaches Fired 2026"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-                    </iframe>
-                </div>
-                <div class="p-6">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="bg-slate-600 text-xs font-bold px-3 py-1 rounded-full">⚠️ 賽季預測</span>
-                        <span class="text-gray-400 text-sm">11小時前</span>
-                    </div>
-                    <h2 class="text-xl font-bold mb-2 text-white leading-tight">
-                        2026賽季開打前預測：最可能被解雇的 10 位 NFL 教練
-                    </h2>
-                    <p class="text-gray-400 leading-relaxed">
-                        2026 NFL 賽季即將開始，哪些教練的帥位最不穩定？TotalProSports 為你盤點新賽季最可能飯碗不保的十位總教練，從墊底球隊到季後賽邊緣的掙扎者。
-                    </p>
-                    <a 
-                        href="https://www.youtube.com/watch?v=7h0UUSC2I5E"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="inline-flex items-center gap-2 mt-4 text-green-400 hover:text-green-300 font-medium">
-                        在 YouTube 開啟 →
-                    </a>
-                </div>
-            </article>
-
-        </div>
-
-        <!-- Footer -->
-        <footer class="text-center mt-14 pt-8 border-t border-slate-700">
-            <p class="text-gray-500 text-sm">
-                影片來源：YouTube (NBC Sports, Pro Football Talk, TotalProSports)
-            </p>
-            <p class="text-gray-600 text-xs mt-2">
-                更新時間：2026年5月25日｜由 OpenClaw Tutor 整理
-            </p>
-        </footer>
+    <div class="store">
+      <h3>名古屋辛麺 鯱輪</h3>
+      <p><strong>地址：</strong> 愛知県名古屋市中区栄3-11-15 LRDビル 1F B</p>
+      <p><strong>評分：</strong> 約 3.5（Tabelog）</p>
+      <p><strong>推薦餐點：</strong> 1. 旨辛にんにくラーメン 2. 辛麺 3. 味噌系或豚骨系</p>
     </div>
+
+    <div class="store">
+      <h3>宮棊子麵 神宮店</h3>
+      <p><strong>地址：</strong> 熱田神宮佔地內</p>
+      <p><strong>評分：</strong> 約 3.5（Tabelog）</p>
+      <p><strong>推薦餐點：</strong> 1. 宮福きしめん 2. きしめん 3. 月見きしめん</p>
+    </div>
+
+    <div class="store">
+      <h3>驛釜棊子麵 中央通り</h3>
+      <p><strong>地址：</strong> 愛知県中村區名站1-1-4 JR名古屋站內</p>
+      <p><strong>評分：</strong> 約 3.5（Tabelog / TripAdvisor）</p>
+      <p><strong>推薦餐點：</strong> 1. 驛釜きしめん 2. 味噌煮込みきしめん 3. 小倉トースト搭配</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="text-2xl font-semibold">名花之里</h2>
+
+    <div class="store">
+      <h3>芭蕉庵 蕎麥麵</h3>
+      <p><strong>地址：</strong> 三重県桑名市駒江270（名花之里園區內）</p>
+      <p><strong>評分：</strong> 約 3.2（TripAdvisor）</p>
+      <p><strong>推薦餐點：</strong> 1. 芭蕉庵御膳 2. 雞南蛮蕎麥 3. 月見蕎麥</p>
+    </div>
+
+    <div class="store">
+      <h3>Marseilles Bakery Restaurant</h3>
+      <p><strong>地址：</strong> 名 flower 之里園區內</p>
+      <p><strong>備註：</strong> 白天較便宜</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="text-2xl font-semibold">歸還機車 → 名古屋</h2>
+
+    <div class="store">
+      <h3>氣晴亭</h3>
+      <p><strong>地址：</strong> 愛知県名古屋市中区千代田5-21-6</p>
+      <p><strong>評分：</strong> 約 4.0（Google Maps）</p>
+      <p><strong>推薦餐點：</strong> 1. 鯛魚蓋飯 2. 味噌炸豬排 3. 海老天丼</p>
+      <p><em>⚠️ 不可刷卡</em></p>
+    </div>
+
+    <div class="store">
+      <h3>Ramen 十夢</h3>
+      <p><strong>地址：</strong> 愛知県昭和区御器所2-1-2</p>
+      <p><strong>評分：</strong> 約 3.7（Tabelog）</p>
+      <p><strong>推薦餐點：</strong> 1. 特製拌麵 2. 特製拉麵 3. 味噌拉麵</p>
+      <p><em>⚠️ 週三公休、不可刷卡</em></p>
+    </div>
+
+    <div class="store">
+      <h3>若鯱家 名古屋駅エスカ店</h3>
+      <p><strong>地址：</strong> 名古屋車站地下街ESCA內</p>
+      <p><strong>推薦餐點：</strong> 1. 咖哩烏龍麵 2. 咖哩UJtan 3. 咖哩烏龍定食</p>
+    </div>
+
+    <div class="store">
+      <h3>千吉 WINC AICHI店</h3>
+      <p><strong>地址：</strong> 愛知県中村區名站4-4-38</p>
+      <p><strong>推薦餐點：</strong> 1. 日替午餐套餐 2. 豆皮烏龍麵 3. 咖哩烏龍麵</p>
+    </div>
+
+    <div class="store">
+      <h3>鯱乃家</h3>
+      <p><strong>地址：</strong> 愛知県佛山市北區田幡2-14-1</p>
+      <p><strong>推薦餐點：</strong> 1. 咖哩烏龍麵（微辣） 2. 極太咖哩烏龍 3. 招牌定食</p>
+    </div>
+
+    <div class="store">
+      <h3>山虎</h3>
+      <p><strong>地址：</strong> 愛知県中村區名站3-28-12 大名古屋ビルヂング 3F</p>
+      <p><strong>推薦餐點：</strong> 1. 味噌 catro定食 2. 味噌關東煮定食 3. 串炸</p>
+    </div>
+  </div>
+
+  <footer class="mt-12 text-center text-sm text-gray-500">
+    自動生成，實時更新中。如需最新資訊請檢查 GitHub Pages。
+  </footer>
 </body>
 </html>
