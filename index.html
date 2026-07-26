@@ -576,24 +576,24 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 var stores = [
-  { name: '名古屋辛麺 鯱輪', lat: 35.16601, lng: 136.90332, emoji: '🌶️', color: 'red', day: '8/9' },
-  { name: '宮棊子麵 神宮店', lat: 35.12736, lng: 136.90869, emoji: '🍲', color: 'blue', day: '8/9' },
-  { name: '驛釜棊子麵 中央通り', lat: 35.17029, lng: 136.88186, emoji: '🥢', color: 'blue', day: '8/9' },
-  { name: '芭蕉庵 蕎麥麵', lat: 35.08213, lng: 136.70348, emoji: '🍃', color: 'orange', day: '8/10' },
-  { name: '氣晴亭', lat: 35.15760, lng: 136.91687, emoji: '🐟', color: 'green', day: '8/12' },
-  { name: 'Ramen 十夢', lat: 35.14980, lng: 136.92003, emoji: '🍝', color: 'purple', day: '8/12' },
-  { name: '若鯱家 ESCA', lat: 35.17085, lng: 136.87985, emoji: '🍛', color: 'darkred', day: '必吃' },
-  { name: '千吉 WINC AICHI', lat: 35.17064, lng: 136.88613, emoji: '🥢', color: 'darkred', day: '必吃' },
-  { name: '鯱乃家', lat: 35.19632, lng: 136.91035, emoji: '🍛', color: 'pink', day: '必吃' },
-  { name: '山虎', lat: 35.17203, lng: 136.88487, emoji: '🍲', color: 'gold', day: '必吃' },
-  { name: '米寅 本店', lat: 35.1743605, lng: 136.8846311, emoji: '🍚', color: 'teal', day: '越光米' },
-  { name: '酢重', lat: 35.1722892, lng: 136.8831611, emoji: '🍚', color: 'teal', day: '銅釜ご飯' },
-  { name: '駅前の店', lat: 35.1690306, lng: 136.8818247, emoji: '🍙', color: 'teal', day: '魚沼コシヒカリ' },
-  { name: 'ある哥', lat: 35.16941, lng: 136.888078, emoji: '🍙', color: 'teal', day: '新潟コシヒカリ' },
-  { name: '加藤軒 MATSUMURA', lat: 35.1720523, lng: 136.8844986, emoji: '🥩', color: 'teal', day: 'ななつぼし' },
-  { name: 'メツゲライ・イノウエ', lat: 35.1721407, lng: 136.8844222, emoji: '🍙', color: 'teal', day: 'ひゃくまん穀' },
-  { name: '酉しず', lat: 35.1718056, lng: 136.885397, emoji: '🐔', color: 'teal', day: '名古屋交趾雞麥飯' },
-  { name: '味の牛たん喜助', lat: 35.1720523, lng: 136.8844986, emoji: '🐄', color: 'teal', day: 'ひとめぼれ+大麦' }
+  { name: '名古屋辛麺 鯱輪', lat: 35.16601, lng: 136.90332, emoji: '🌶️', color: 'red', day: '8/9', gmap: 'https://www.google.com/maps/search/名古屋辛麺+鯱輪+名古屋' },
+  { name: '宮棊子麵 神宮店', lat: 35.12736, lng: 136.90869, emoji: '🍲', color: 'blue', day: '8/9', gmap: 'https://www.google.com/maps/search/宮棊子麵+神宮店+熱田神宮' },
+  { name: '驛釜棊子麵 中央通り', lat: 35.17029, lng: 136.88186, emoji: '🥢', color: 'blue', day: '8/9', gmap: 'https://www.google.com/maps/search/驛釜棊子麵+中央通り+JR名古屋駅' },
+  { name: '芭蕉庵 蕎麥麵', lat: 35.08213, lng: 136.70348, emoji: '🍃', color: 'orange', day: '8/10', gmap: 'https://www.google.com/maps/search/芭蕉庵+名花之里+三重県' },
+  { name: '氣晴亭', lat: 35.15760, lng: 136.91687, emoji: '🐟', color: 'green', day: '8/12', gmap: 'https://www.google.com/maps/search/氣晴亭+名古屋+中区千代田' },
+  { name: 'Ramen 十夢', lat: 35.14980, lng: 136.92003, emoji: '🍝', color: 'purple', day: '8/12', gmap: 'https://www.google.com/maps/search/Ramen+十夢+名古屋+昭和区御器所' },
+  { name: '若鯱家 ESCA', lat: 35.17085, lng: 136.87985, emoji: '🍛', color: 'darkred', day: '必吃', gmap: 'https://www.google.com/maps/search/若鯱家+名古屋駅ESCA' },
+  { name: '千吉 WINC AICHI', lat: 35.17064, lng: 136.88613, emoji: '🥢', color: 'darkred', day: '必吃', gmap: 'https://www.google.com/maps/search/千吉+WINC+AICHI+名古屋' },
+  { name: '鯱乃家', lat: 35.19632, lng: 136.91035, emoji: '🍛', color: 'pink', day: '必吃', gmap: 'https://www.google.com/maps/search/鯱乃家+北区田幡+名古屋' },
+  { name: '山虎', lat: 35.17203, lng: 136.88487, emoji: '🍲', color: 'gold', day: '必吃', gmap: 'https://www.google.com/maps/search/山虎+大名古屋ビルヂング+名古屋' },
+  { name: '米寅 本店', lat: 35.1743605, lng: 136.8846311, emoji: '🍚', color: 'teal', day: '越光米', gmap: 'https://www.google.com/maps/search/米寅+本店+名古屋+UNIMALL' },
+  { name: '酢重', lat: 35.1722892, lng: 136.8831611, emoji: '🍚', color: 'teal', day: '銅釜ご飯', gmap: 'https://www.google.com/maps/search/酢重+Midland+Square+名古屋' },
+  { name: '駅前の店', lat: 35.1690306, lng: 136.8818247, emoji: '🍙', color: 'teal', day: '魚沼コシヒカリ', gmap: 'https://www.google.com/maps/search/駅前の店+名古屋駅+太閤通口' },
+  { name: 'ある哥', lat: 35.16941, lng: 136.888078, emoji: '🍙', color: 'teal', day: '新潟コシヒカリ', gmap: 'https://www.google.com/maps/search/ある哥+柳橋Food+Market+名古屋' },
+  { name: '加藤軒 MATSUMURA', lat: 35.1720523, lng: 136.8844986, emoji: '🥩', color: 'teal', day: 'ななつぼし', gmap: 'https://www.google.com/maps/search/加藤軒+MATSUMURA+大名古屋ビルヂング+名古屋' },
+  { name: 'メツゲライ・イノウエ', lat: 35.1721407, lng: 136.8844222, emoji: '🍙', color: 'teal', day: 'ひゃくまん穀', gmap: 'https://www.google.com/maps/search/メツゲライ・イノウエ+大名古屋ビルヂング+B1F' },
+  { name: '酉しず', lat: 35.1718056, lng: 136.885397, emoji: '🐔', color: 'teal', day: '名古屋交趾雞麥飯', gmap: 'https://www.google.com/maps/search/酉しず+KDXビル+名古屋' },
+  { name: '味の牛たん喜助', lat: 35.1720523, lng: 136.8844986, emoji: '🐄', color: 'teal', day: 'ひとめぼれ+大麦', gmap: 'https://www.google.com/maps/search/味の牛たん喜助+大名古屋ビルヂング+B1F+名古屋' }
 ];
 
 var colorMap = { red:'#ef4444', blue:'#3b82f6', orange:'#f97316', green:'#22c55e', purple:'#a855f7', darkred:'#dc2626', pink:'#ec4899', gold:'#eab308', teal:'#14b8a6' };
@@ -604,7 +604,7 @@ stores.forEach(function(s, i) {
   }).addTo(map).bindPopup(
     '<b>' + s.emoji + ' ' + s.name + '</b><br>' +
     '<small>' + s.day + '</small><br>' +
-    '<a href="https://www.google.com/maps?q=' + s.lat + ',' + s.lng + '" target="_blank">Google Maps で開く</a>'
+    '<a href="' + s.gmap + '" target="_blank">📍 查看 Google 地圖</a>'
   );
   s.marker = marker;
 });
