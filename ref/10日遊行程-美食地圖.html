@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>🗺️ 名古屋10日遊 美食地圖 2026/07｜行程美食 × 評論</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+.leaflet-container { height: 500px; width: 100%; border-radius: 12px; }
+.food-img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; background: linear-gradient(135deg, #fef3c7, #fde68a, #fbbf24); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+.review-card { border-left: 4px solid #f59e0b; }
+.star { color: #f59e0b; }
+.section-title { border-bottom: 3px solid #f59e0b; padding-bottom: 0.25rem; display: inline-block; }
+.category-marker { width: 18px; height: 18px; border: 3px solid white; border-radius: 50%; box-shadow: 0 1px 5px rgba(0,0,0,.55); }
+.user-dot { width: 18px; height: 18px; border-radius: 50%; background: #3b82f6; border: 3px solid #fff; box-shadow: 0 0 0 3px rgba(59,130,246,.35); animation: userPulse 1.8s ease-out infinite; }
+@keyframes userPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(59,130,246,.45), 0 0 0 3px rgba(59,130,246,.3); }
+  100% { box-shadow: 0 0 0 14px rgba(59,130,246,0), 0 0 0 3px rgba(59,130,246,.3); }
+}
+</style>
+</head>
+<body class="bg-stone-50 text-stone-800 font-sans">
+<div class="max-w-4xl mx-auto px-4 py-6">
+
+<!-- Header -->
+<header class="text-center mb-8">
+  <h1 class="text-3xl font-bold">🗺️ 名古屋10日遊 美食地圖（7/21–7/30）</h1>
+  <p class="text-stone-500 mt-2">資料來源：ref/2026名古屋10日遊行程 × Tabelog × Google Maps｜親子旅遊美食收藏</p>
+</header>
+
+<!-- 🗺️ 地圖 + 圖例 -->
+<section class="mb-8">
+  <h2 class="text-2xl font-bold section-title mb-4">🗺️ 全部店家 GPS 位置</h2>
+  <div id="map"></div>
+  <div class="flex flex-wrap items-center gap-3 mt-2">
+    <button id="locateBtn" onclick="locateUser()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 active:scale-95 text-white text-sm rounded-full shadow transition-all">📍 我的位置</button>
+    <span class="text-xs text-stone-400">開啟定位後，藍色脈動點會顯示你目前的位置</span>
+  </div>
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mt-3 text-xs">
+    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-red-500"></span> 紅｜拉麵・蕎麥</span>
+    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-orange-500"></span> 橙｜名古屋名物・咖哩</span>
+    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-yellow-500"></span> 黃｜小吃・鄉土料理</span>
+    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-green-500"></span> 綠｜飛驒牛・燒肉</span>
+    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-500"></span> 藍｜海鮮・鰻魚・市場</span>
+    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-purple-500"></span> 紫｜甜點・小雞蛋糕</span>
+    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-pink-500"></span> 粉｜麵包・輕食</span>
+    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-gray-500"></span> 灰｜流水麵線體驗</span>
+  </div>
+</section>
+
+<!-- 📊 店家總覽表格 -->
+<section class="mb-8">
+  <h2 class="text-2xl font-bold section-title mb-4">📊 快速總覽</h2>
+  <div class="overflow-x-auto rounded-xl shadow">
+    <table class="min-w-full bg-white text-sm">
+      <thead class="bg-amber-100 text-amber-900">
+        <tr><th class="p-2 text-left">#</th><th class="p-2 text-left">店家</th><th class="p-2 text-left">評分</th><th class="p-2 text-left">分類</th><th class="p-2 text-left">日期 / 區域</th></tr>
+      </thead>
+      <tbody class="divide-y">
+        <tr><td class="p-2">1</td><td class="p-2 font-semibold">麺家獅子丸</td><td class="p-2"><span class="star">★★★★</span> Google 4.3</td><td class="p-2">雞白湯拉麵</td><td class="p-2">7/21 名古屋駅</td></tr>
+        <tr><td class="p-2">2</td><td class="p-2 font-semibold">世界の山ちゃん 名駅</td><td class="p-2"><span class="star">★★★★</span> Google 3.7</td><td class="p-2">手羽先</td><td class="p-2">7/21 名古屋駅</td></tr>
+        <tr><td class="p-2">3</td><td class="p-2 font-semibold">高山プリン亭</td><td class="p-2"><span class="star">★★★★</span> Tabelog 3.48</td><td class="p-2">布丁甜點</td><td class="p-2">7/22 高山老街</td></tr>
+        <tr><td class="p-2">4</td><td class="p-2 font-semibold">橋本煎餅堂</td><td class="p-2"><span class="star">★★★★</span> Google 4.2</td><td class="p-2">現烤仙貝</td><td class="p-2">7/22 高山老街</td></tr>
+        <tr><td class="p-2">5</td><td class="p-2 font-semibold">飛騨こって牛</td><td class="p-2"><span class="star">★★★★</span> Google 4.4</td><td class="p-2">飛驒牛握壽司</td><td class="p-2">7/22 高山老街</td></tr>
+        <tr><td class="p-2">6</td><td class="p-2 font-semibold">麺屋白川</td><td class="p-2"><span class="star">★★★★</span> Google 4.2</td><td class="p-2">高山拉麵</td><td class="p-2">7/22 高山</td></tr>
+        <tr><td class="p-2">7</td><td class="p-2 font-semibold">味処古川</td><td class="p-2"><span class="star">★★★★</span> Google 4.2</td><td class="p-2">鄉土料理</td><td class="p-2">7/23 飛騨古川</td></tr>
+        <tr><td class="p-2">8</td><td class="p-2 font-semibold">味の与平</td><td class="p-2"><span class="star">★★★★</span> Tabelog 3.51</td><td class="p-2">飛驒牛</td><td class="p-2">7/23 高山</td></tr>
+        <tr><td class="p-2">9</td><td class="p-2 font-semibold">アルプスのパン屋さん</td><td class="p-2"><span class="star">★★★★</span> Google 4.1</td><td class="p-2">牛角可頌</td><td class="p-2">7/24 新穗高</td></tr>
+        <tr><td class="p-2">10</td><td class="p-2 font-semibold">嘉門次小屋</td><td class="p-2"><span class="star">★★★★</span> Google 4.2</td><td class="p-2">岩魚鹽燒</td><td class="p-2">7/25 上高地</td></tr>
+        <tr><td class="p-2">11</td><td class="p-2 font-semibold">あみだが滝荘</td><td class="p-2"><span class="star">★★★★</span> Google 3.9</td><td class="p-2">流水麵線</td><td class="p-2">7/25 郡上白鳥</td></tr>
+        <tr><td class="p-2">12</td><td class="p-2 font-semibold">釜ヶ滝 滝茶屋</td><td class="p-2"><span class="star">★★★</span> Google 3.5</td><td class="p-2">流水麵線＋釣魚</td><td class="p-2">7/25 郡上</td></tr>
+        <tr><td class="p-2">13</td><td class="p-2 font-semibold">魚寅</td><td class="p-2"><span class="star">★★★★</span> Google 4.4</td><td class="p-2">炭火燒鰻魚</td><td class="p-2">7/25 郡上八幡</td></tr>
+        <tr><td class="p-2">14</td><td class="p-2 font-semibold">ぴち天 本店</td><td class="p-2"><span class="star">★★★★</span> Google 3.9</td><td class="p-2">壽司・天婦羅</td><td class="p-2">7/26 名駅</td></tr>
+        <tr><td class="p-2">15</td><td class="p-2 font-semibold">DURGA 名古屋港店</td><td class="p-2"><span class="star">★★★★</span> Google 4.5</td><td class="p-2">印度咖哩</td><td class="p-2">7/27 名古屋港</td></tr>
+        <tr><td class="p-2">16</td><td class="p-2 font-semibold">あつた蓬莱軒 神宮店</td><td class="p-2"><span class="star">★★★★</span> Tabelog 3.67</td><td class="p-2">鰻魚飯三吃</td><td class="p-2">7/27 熱田</td></tr>
+        <tr><td class="p-2">17</td><td class="p-2 font-semibold">鳥開総本家 名駅ユニモール店</td><td class="p-2"><span class="star">★★★★</span> Google 3.9</td><td class="p-2">親子丼・唐揚げ</td><td class="p-2">7/27 名駅</td></tr>
+        <tr><td class="p-2">18</td><td class="p-2 font-semibold">皇亭 Kotei</td><td class="p-2"><span class="star">★★★★</span> Google 4.1</td><td class="p-2">燒肉吃到飽</td><td class="p-2">7/28 榮</td></tr>
+        <tr><td class="p-2">19</td><td class="p-2 font-semibold">李さんの台湾名物屋台</td><td class="p-2"><span class="star">★★★★</span> Google 4.0</td><td class="p-2">台灣炸雞排</td><td class="p-2">7/29 大須</td></tr>
+        <tr><td class="p-2">20</td><td class="p-2 font-semibold">柳橋中央市場</td><td class="p-2"><span class="star">★★★★</span> Google 4.0</td><td class="p-2">市場魚生</td><td class="p-2">7/30 名古屋駅</td></tr>
+        <tr><td class="p-2">21</td><td class="p-2 font-semibold">Piyorin SHOP</td><td class="p-2"><span class="star">★★★★</span> Google 4.1</td><td class="p-2">小雞蛋糕</td><td class="p-2">必吃 名古屋駅</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 🍜 各店家詳細 -->
+<section class="mb-8">
+  <h2 class="text-2xl font-bold section-title mb-4">📝 各店家詳細評論與推薦</h2>
+
+<!-- 1. 麺家獅子丸 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-semibold">7/21 名古屋駅 晚餐</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('麺家獅子丸')">1. 麺家獅子丸</h3><p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中村区亀島2-1-1（名古屋駅太閤通口附近）</p><p class="text-stone-400 text-xs mb-2">🕐 11:00–14:30 / 17:00–21:00（週一~日）· 食券機點餐（現金/Suica）</p><span class="text-amber-500 font-semibold">⭐ Google 4.3（3141 則）· <a class="underline" href="https://tabelog.com/aichi/A2301/A230101/23060674/" target="_blank">Tabelog 頁面</a></span><div class="mt-3 space-y-2"><div class="review-card bg-red-50 p-2 rounded text-sm">⭐「濃厚雞白湯拉麵，湯頭濃郁 creamy 卻不膩口，是人氣招牌」</div><div class="review-card bg-red-50 p-2 rounded text-sm">⭐「A5 和牛拉麵與和牛丼也受好評，加檸檬汁能帶出湯頭鮮味」</div><div class="review-card bg-red-50 p-2 rounded text-sm">⭐「人氣高、開店前就排隊；店內約13席，尖峰可能要等1小時」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/aichi/A2301/A230101/23060674/" target="_blank"><img src="https://tblg.k-img.com/restaurant/images/Rvw/196253/640x640_rect_33cdc974e7b4ce87107976dcf965d2f2.jpg" alt="雞白湯拉麵（Tabelog照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">雞白湯拉麵（Tabelog照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs mx-1">獅子丸ぱいたんらぁめん</span><span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs mx-1">A5和牛拉麵</span><span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs mx-1">味変ペッパーオイル</span></p></div></div>
+
+<!-- 2. 世界の山ちゃん -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-semibold">7/21 名古屋駅 消夜</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('世界の山ちゃん 名駅')">2. 世界の山ちゃん 名駅</h3><p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中村区名駅4-16-27（名駅東口一帶）</p><p class="text-stone-400 text-xs mb-2">🕐 17:00–24:15 · 可刷卡</p><span class="text-amber-500 font-semibold">⭐ Google 3.7（1443 則）· 名古屋手羽先名店</span><div class="mt-3 space-y-2"><div class="review-card bg-orange-50 p-2 rounded text-sm">⭐「招牌手羽先（炸雞翅）酥脆帶椒鹽胡椒香，配啤酒是絕配」</div><div class="review-card bg-orange-50 p-2 rounded text-sm">⭐「名古屋名物聚集、價格實惠、氛圍熱鬧，適合大人聚餐」</div><div class="review-card bg-orange-50 p-2 rounded text-sm">⭐「胡椒可選辣度；服務效率評價兩極，尖峰時段較忙亂」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/世界の山ちゃん+名駅+名古屋" target="_blank"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjAIXg6Gnc2uPJyUQf9zkxruTCDudbNz9_2joi8bre7mcz23zZHDd_jhEZQZLJgfy-O5VZwNnnrCAkjPhRndjCNNSU0iZrHL47fMvTdhp7epF5-HWYy9ppYP42PCVAd1MVV3rJ9m5q_KqR38=s4800-w800" alt="手羽先（Google Maps 照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">手羽先（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs mx-1">幻の手羽先</span><span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs mx-1">黑胡椒手羽先</span><span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs mx-1">大蒜炒飯</span></p></div></div>
+
+<!-- 3. 高山プリン亭 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-semibold">7/22 高山老街 必吃甜點</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('高山プリン亭')">3. 高山プリン亭</h3><p class="text-stone-500 text-sm mb-1">📍 岐阜県高山市上三之町95（老街旁）</p><p class="text-stone-400 text-xs mb-2">🕐 10:00–16:30 · 有內用座位與外帶</p><span class="text-amber-500 font-semibold">⭐ Tabelog 3.48（158 則）· Google 4.4（499 則）</span><div class="mt-3 space-y-2"><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「布丁口感絲滑濃郁、甜度剛好，是高山老街必吃甜點」</div><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「雪國布丁（藍色彈珠汽水口味＋銀箔）最受小朋友歡迎，抹茶也推」</div><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「玻璃罐可重複使用，內用座位小巧，外帶邊走邊吃很方便」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/gifu/A2104/A210401/21018423/" target="_blank"><img src="https://tblg.k-img.com/restaurant/images/Rvw/325042/640x640_rect_863ee264b0fa81670676151543b74151.jpg" alt="高山プリン（Tabelog照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">高山布丁（Tabelog照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">高山プリン（原味）</span><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">雪國プリン</span><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">抹茶プリン</span></p></div></div>
+
+<!-- 4. 橋本煎餅堂 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs font-semibold">7/22 高山老街 邊走邊吃</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('橋本煎餅堂')">4. 橋本煎餅堂</h3><p class="text-stone-500 text-sm mb-1">📍 岐阜県高山市上三之町85（老街）</p><p class="text-stone-400 text-xs mb-2">🕐 9:00–17:00 · 只收現金</p><span class="text-amber-500 font-semibold">⭐ Google 4.2（145 則）</span><div class="mt-3 space-y-2"><div class="review-card bg-yellow-50 p-2 rounded text-sm">⭐「現烤仙貝炭火現烤、醬油香氣足，酥脆口感是招牌」</div><div class="review-card bg-yellow-50 p-2 rounded text-sm">⭐「口味種類多（味噌芝麻、味噌蔥等），可買整包當伴手禮」</div><div class="review-card bg-yellow-50 p-2 rounded text-sm">⭐「現烤單片約400日圓，價格見仁見智；只收現金」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/橋本煎餅+高山" target="_blank"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjBw2nKDtIy0xOgRiusFfCz1h1mQafSpniO33Wm0zvYN-KFsqhkuR8pabuq_gIotBQ-qcIrnjbHJTVt2UAOz4CgVtwS9x9eDAXVzL_4E0zLQOXSTEmxMb4G6lCtpqFXjOeN88_h8bOeQCOVfw8VgSbrGNQ=s4800-w800" alt="現烤仙貝（Google Maps 照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">現烤仙貝（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs mx-1">現烤醬油仙貝</span><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs mx-1">味噌芝麻仙貝</span><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs mx-1">伴手禮整包</span></p></div></div>
+
+<!-- 5. 飛騨こって牛 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-semibold">7/22 高山老街 必吃美食</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('飛騨こって牛')">5. 飛騨こって牛</h3><p class="text-stone-500 text-sm mb-1">📍 岐阜県高山市上三之町82（老街）</p><p class="text-stone-400 text-xs mb-2">🕐 10:00–17:00 · 週二公休 · 只收現金</p><span class="text-amber-500 font-semibold">⭐ Google 4.4（2088 則）· <a class="underline" href="https://tabelog.com/gifu/A2104/A210401/21023203/" target="_blank">Tabelog 頁面</a></span><div class="mt-3 space-y-2"><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「飛驒牛握壽司入口即化、油花完美，放在仙貝上一起吃別有風味」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「三種飛驒牛握壽司拼盤約1200日圓，排隊前進很快」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「內用區安靜舒適（與隔壁咖啡廳共用），只收現金」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/gifu/A2104/A210401/21023203/" target="_blank"><img src="https://tblg.k-img.com/restaurant/images/Rvw/358394/640x640_rect_1d8501ca5ccf59d343570ec63c272139.jpg" alt="飛驒牛握壽司（Tabelog照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">飛驒牛握壽司（Tabelog照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">飛驒牛握り寿司（Cセット）</span><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">軍艦（牛碎肉+鵪鶉蛋）</span></p></div></div>
+
+<!-- 6. 麺屋白川 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-semibold">7/22 高山 餐食</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('麺屋白川')">6. 麺屋白川</h3><p class="text-stone-500 text-sm mb-1">📍 岐阜県高山市相生町56-2</p><p class="text-stone-400 text-xs mb-2">🕐 11:00–15:00 · 週二公休</p><span class="text-amber-500 font-semibold">⭐ Google 4.2（1798 則）· <a class="underline" href="https://tabelog.com/gifu/A2104/A210401/21011738/" target="_blank">Tabelog 頁面</a></span><div class="mt-3 space-y-2"><div class="review-card bg-red-50 p-2 rounded text-sm">⭐「高山拉麵代表店，醬油湯頭帶胡椒香、捲捲麵條彈牙」</div><div class="review-card bg-red-50 p-2 rounded text-sm">⭐「菜單簡單只有醬油拉麵（可加蛋），湯頭鹹香濃郁」</div><div class="review-card bg-red-50 p-2 rounded text-sm">⭐「座位少約18席，尖峰常排隊30–60分鐘；工作人員親切」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/gifu/A2104/A210401/21011738/" target="_blank"><img src="https://tblg.k-img.com/restaurant/images/Rvw/24774/640x640_rect_24774471.jpg" alt="高山拉麵（Tabelog照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">高山拉麵（Tabelog照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs mx-1">醤油ラーメン</span><span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs mx-1">味玉入り</span></p></div></div>
+
+<!-- 7. 味処古川 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs font-semibold">7/23 飛騨古川 午餐</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('味処古川')">7. 味処古川</h3><p class="text-stone-500 text-sm mb-1">📍 岐阜県飛騨市古川町壱之町11-3（瀬戸川旁）</p><p class="text-stone-400 text-xs mb-2">🕐 8:30–14:00 · 可刷卡／感應支付</p><span class="text-amber-500 font-semibold">⭐ Google 4.2（570 則）· <a class="underline" href="https://tabelog.com/gifu/A2104/A210402/21000897/" target="_blank">Tabelog 頁面</a></span><div class="mt-3 space-y-2"><div class="review-card bg-yellow-50 p-2 rounded text-sm">⭐「飛驒牛定食、けいちゃん、鮎等鄉土料理應有盡有，價格實在」</div><div class="review-card bg-yellow-50 p-2 rounded text-sm">⭐「古川老街氛圍＋親切服務，店員可用簡單英文溝通」</div><div class="review-card bg-yellow-50 p-2 rounded text-sm">⭐「營業時間只到下午兩點，午餐要留意時間」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/gifu/A2104/A210402/21000897/" target="_blank"><img src="https://tblg.k-img.com/restaurant/images/Rvw/323573/640x640_rect_701539829de7e3b901f484b2ae35a8b7.jpg" alt="飛驒牛定食（Tabelog照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">鄉土料理定食（Tabelog照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs mx-1">飛驒牛定食</span><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs mx-1">けいちゃん</span><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs mx-1">五平餅</span></p></div></div>
+
+<!-- 8. 味の与平 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-semibold">7/23 高山 晚餐</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('味の与平')">8. 味の与平（舩坂酒造店）</h3><p class="text-stone-500 text-sm mb-1">📍 岐阜県高山市上二之町7</p><p class="text-stone-400 text-xs mb-2">🕐 11:00–14:00 / 17:00–20:00 · 可刷卡</p><span class="text-amber-500 font-semibold">⭐ Tabelog 3.51（301 則）· Google 4.4（1303 則）</span><div class="mt-3 space-y-2"><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「飛驒牛可選鐵板燒或壽喜燒吃法，肉質軟嫩、油花豐富」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「舩坂酒造直營，可搭配地酒品飲；備有中英文菜單」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「人氣高建議預約；店內烤煙較重，怕煙可避開尖峰」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/gifu/A2104/A210401/21009589/" target="_blank"><img src="https://tblg.k-img.com/restaurant/images/Rvw/103067/640x640_rect_103067051.jpg" alt="飛驒牛鐵板燒（Tabelog照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">飛驒牛料理（Tabelog照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">飛驒牛ステーキ</span><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">すき焼き</span><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">地酒飲み比べ</span></p></div></div>
+
+<!-- 9. アルプスのパン屋さん -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-pink-100 text-pink-700 rounded text-xs font-semibold">7/24 新穗高纜車 白樺平站</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('アルプスのパン屋さん 白樺平')">9. アルプスのパン屋さん（白樺平）</h3><p class="text-stone-500 text-sm mb-1">📍 岐阜県高山市奥飛騨温泉郷神坂711-1（白樺平站旁）</p><p class="text-stone-400 text-xs mb-2">🕐 9:00–16:30 · 外帶為主</p><span class="text-amber-500 font-semibold">⭐ Google 4.1（141 則）· 纜車行程推薦午餐</span><div class="mt-3 space-y-2"><div class="review-card bg-pink-50 p-2 rounded text-sm">⭐「牛角可頌與丹麥麵包是招牌，被譽為山裡最好吃的麵包店」</div><div class="review-card bg-pink-50 p-2 rounded text-sm">⭐「飛驒牛咖哩麵包棒、栗子可頌等人氣商品，還有布丁」</div><div class="review-card bg-pink-50 p-2 rounded text-sm">⭐「可外帶到展望台座位享用，配雪山景是纜車行程亮點」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/アルプスのパン屋さん+白樺平" target="_blank"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjD4xYi6UoidCEZbotz1Pr2BCYCvBHUI3tJKVqqLuLOfCW-NR0DlTdE-iId48wFcUu-nLQhvcDtunZ0Qvc6TJq1iOry-bPbhvzHHL-RqRsHYrkb04dA_vqeMdeNIAWRdvBiy8QneuTQuQj02NIfcWjweSA=s4800-w800" alt="白樺平麵包（Google Maps 照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">白樺平麵包店（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-pink-100 text-pink-800 px-2 py-0.5 rounded text-xs mx-1">牛角可頌</span><span class="bg-pink-100 text-pink-800 px-2 py-0.5 rounded text-xs mx-1">飛驒牛咖哩麵包棒</span><span class="bg-pink-100 text-pink-800 px-2 py-0.5 rounded text-xs mx-1">栗子可頌</span></p></div></div>
+
+<!-- 10. 嘉門次小屋 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-semibold">7/25 上高地 休息點</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('嘉門次小屋')">10. 嘉門次小屋</h3><p class="text-stone-500 text-sm mb-1">📍 長野県松本市安曇（上高地・明神池旁）</p><p class="text-stone-400 text-xs mb-2">🕐 午餐時段營業（山上小屋）· 只收現金</p><span class="text-amber-500 font-semibold">⭐ Google 4.2（642 則）</span><div class="mt-3 space-y-2"><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「招牌岩魚鹽燒烤得酥脆、可整尾吃，配蕎麥麵是經典組合」</div><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「傳統山小屋氛圍，戶外座位風景佳，蕎麥麵約1600日圓」</div><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「午餐人潮多，建議提早排隊；只收現金」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/嘉門次小屋+上高地" target="_blank"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjBGJek3xKT2bN6OlYD3_CTG6fKW_asjgCDJ5hH-c8zB5LS8vioiOG4b28Qa-6agIDh-CWI6Z4M6CVzW1CMRz8gLDEvNPvIICOBEg9PpQtei-fX3iV5lX1_PcNcOtfiRHLrT0-k4qxy3lYub5w=s4800-w800" alt="岩魚鹽燒（Google Maps 照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">岩魚鹽燒（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">岩魚塩焼き</span><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">山賊そば</span></p></div></div>
+
+<!-- 11. あみだが滝荘 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-semibold">7/25 郡上白鳥 流水麵線</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('あみだが滝荘')">11. あみだが滝荘（阿弥陀ヶ滝）</h3><p class="text-stone-500 text-sm mb-1">📍 岐阜県郡上市白鳥町前谷1106-1-2（瀑布下方）</p><p class="text-stone-400 text-xs mb-2">🕐 10:00–14:00 · 週三公休 · 只收現金</p><span class="text-amber-500 font-semibold">⭐ Google 3.9（506 則）</span><div class="mt-3 space-y-2"><div class="review-card bg-gray-50 p-2 rounded text-sm">⭐「石板溝渠流下的流水麵線，配芝麻風味沾醬，清涼消暑」</div><div class="review-card bg-gray-50 p-2 rounded text-sm">⭐「阿彌陀瀑布步行約5分鐘，可先買票再去看瀑布」</div><div class="review-card bg-gray-50 p-2 rounded text-sm">⭐「暑假人潮爆滿（曾排到300公尺），建議一開店就到」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/あみだが滝荘+郡上" target="_blank"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjAh_vHvjH6bMpkGJ4fbrKtWtj7fy4v9mupfNqE0uVD3pQQ2SxYI2pdzIke5K64mEMlWNvrbhwJOTaHYy_Lw-737z4qH2CGU2uWprsypx9uuK_8cHZaQG3Sr7m5nIxHO-VZWejWragBzOwnbwA=s4800-w800" alt="流水麵線（Google Maps 照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">流水麵線（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs mx-1">流しそうめん</span><span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs mx-1">味噌だんご</span><span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs mx-1">岩魚塩焼き</span></p></div></div>
+
+<!-- 12. 釜ヶ滝 滝茶屋 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-semibold">7/25 郡上 流水麵線＋釣魚</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('釜ヶ滝 滝茶屋')">12. 釜ヶ滝 滝茶屋（元祖流しそうめん）</h3><p class="text-stone-500 text-sm mb-1">📍 岐阜県郡上市美並町上田1000（實際地址請依 Google Maps 為準）</p><p class="text-stone-400 text-xs mb-2">🕐 10:00–17:00 · 有釣魚池</p><span class="text-amber-500 font-semibold">⭐ Google 3.5（590 則）· 可預約（Epark）</span><div class="mt-3 space-y-2"><div class="review-card bg-gray-50 p-2 rounded text-sm">⭐「流水麵線配現烤／現炸溪魚，還有釣魚池可體驗（釣到的魚可現烤）」</div><div class="review-card bg-gray-50 p-2 rounded text-sm">⭐「溪邊自然環境涼爽，孩子很喜歡釣魚活動」</div><div class="review-card bg-gray-50 p-2 rounded text-sm">⭐「假日人潮多、停車位有限，建議預約或一早就到」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/釜ヶ滝+滝茶屋+郡上" target="_blank"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjAqMfFU4EBdgTuZPCp7xCNy638r5c0bm40LKc5SRoEhmCVXyu49m-Ad6jiz_ytw9jDNXnvsLmduc7RHZpxtPaEFFMq54l_sSAu0L3HI8kWj3DPGR6945Kxq2NOVvau9ul0OJwEm1E22cazMPQ=s4800-w800" alt="流水麵線與烤魚（Google Maps 照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">流水麵線（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs mx-1">流しそうめん</span><span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs mx-1">釣り体験</span><span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs mx-1">唐揚げ魚</span></p></div></div>
+
+<!-- 13. 魚寅 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-semibold">7/25 郡上八幡 晚餐</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('魚寅')">13. 魚寅（炭火焼うなぎ）</h3><p class="text-stone-500 text-sm mb-1">📍 岐阜県郡上市八幡町新町953（1931年創業）</p><p class="text-stone-400 text-xs mb-2">🕐 11:00–14:00 / 17:00–19:00 · 週二公休 · 現金結帳、建議訂位</p><span class="text-amber-500 font-semibold">⭐ Google 4.4（670 則）</span><div class="mt-3 space-y-2"><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「1931年創業老舖，炭火燒鰻魚外脆內軟、醬汁鹹甜平衡」</div><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「ひつまぶし份量十足，『7』結尾的日子有折扣（店內公告為準）」</div><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「座位少、假日要排隊，建議開店前到；只收現金」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/魚寅+郡上八幡+うなぎ" target="_blank"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjDsYcy2wEwMnIHiQQoN2dSFoFQsVGQ2JtL_catMK07k03ao3Oi4o1oaIbVGsqsaECy7QtcKHLWoZXwnZf6JY6OBE1RNW-kQycqnUNNCLnTVmR4u0Sh30zRVnGMh61Td3pn-t1FRDuPbABCdjg=s4800-w800" alt="炭火燒鰻魚（Google Maps 照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">炭火燒鰻魚（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">黒焼きうな重</span><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">ひつまぶし</span><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">白焼き</span></p></div></div>
+
+<!-- 14. ぴち天 本店 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-semibold">7/26 名駅 晚餐</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('ぴち天 本店')">14. 魚河岸本舗 ぴち天 本店</h3><p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中村区名駅2-36-8 知多屋名塩ビル1F/B1F</p><p class="text-stone-400 text-xs mb-2">🕐 17:00–1:00（週六日 13:00 起）· 可刷卡</p><span class="text-amber-500 font-semibold">⭐ Google 3.9（641 則）</span><div class="mt-3 space-y-2"><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「名駅魚河岸居酒屋，新鮮生魚片與酥脆天婦羅是招牌」</div><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「價格親民、氛圍熱鬧，適合多人聚餐；有英文菜單」</div><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「10種生魚片拼盤人氣高；鮪魚品質評價兩極，可先問當日推薦」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/魚河岸本舗+ぴち天+本店" target="_blank"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjCzR19Mta1OTFXACU4TKv-4c2fY9DJ-68J-TA98PoGdHCvli73KljGj4pzgsy3CYho2dC0WZQNF9pJJqb4vNh9GahwGK1hec6fo2FbcerBNpChr98e9CLUzwvwF7UFvTeA-AEonOfCi7fJHDVM=s4800-w720" alt="壽司與天婦羅（Google Maps 照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">壽司與天婦羅（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">10種刺身盛り合わせ</span><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">海老天ぷら</span></p></div></div>
+
+<!-- 15. DURGA 名古屋港店 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-semibold">7/27 名古屋港 午餐</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('DURGA 名古屋港店')">15. インド料理 DURGA（ドルーガ）名古屋港店</h3><p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市港区入船2-3-2（名古屋港駅附近）</p><p class="text-stone-400 text-xs mb-2">🕐 11:00–15:00 / 17:00–22:00</p><span class="text-amber-500 font-semibold">⭐ Google 4.5（186 則）</span><div class="mt-3 space-y-2"><div class="review-card bg-orange-50 p-2 rounded text-sm">⭐「名古屋港的印度料理寶藏店，naan 餅口感超好、咖哩香濃」</div><div class="review-card bg-orange-50 p-2 rounded text-sm">⭐「午餐套餐份量十足、價格實惠，起司 naan 是必點」</div><div class="review-card bg-orange-50 p-2 rounded text-sm">⭐「水族館出來步行可到，中午通常不用排隊；芒果拉西也推」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/インド料理ドルーガ+名古屋港" target="_blank"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjA4ko_acB8NqXL1Yy3YfERxNtBU_qIbthawCEkhUZDkL2lRfqvxl1kQsggeFrA0QvmblUmSwHBO4m_pTQCvpC601P02GAjut9ofRsNYhKhmUzqINhT2h8sdDbYWT5eCuV-AJQFsiCjQOLeFlQ=s4800-w800" alt="印度咖哩與naan（Google Maps 照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">咖哩與 naan（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs mx-1">起司naan</span><span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs mx-1">チキンカレーセット</span><span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs mx-1">マンゴーラッシー</span></p></div></div>
+
+<!-- 16. あつた蓬莱軒 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-semibold">7/27 熱田 午餐（建議09:30先登記）</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('あつた蓬莱軒 神宮店')">16. あつた蓬莱軒 神宮店</h3><p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市熱田区神宮2-10-26（熱田神宮南門前）</p><p class="text-stone-400 text-xs mb-2">🕐 11:30–14:30 / 16:30–20:30 · 週二公休 · 有免費停車場</p><span class="text-amber-500 font-semibold">⭐ Tabelog 3.67（2033 則）· 入選 Tabelog Unagi 100 2024 · Google 4.4（6157 則）</span><div class="mt-3 space-y-2"><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「ひつまぶし（鰻魚飯三吃）創始名店，炭火烤鰻外脆內軟」</div><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「一次體驗原味／加佐料／茶泡飯三種吃法，茶湯特別出色」</div><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「人氣超高建議預約或開店前排隊，等待時可先去熱田神宮參拜」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/aichi/A2301/A230112/23000109/" target="_blank"><img src="https://tblg.k-img.com/restaurant/images/Rvw/317952/640x640_rect_5499667a8b8ae2766d119bc0a12b4ca9.jpg" alt="ひつまぶし（Tabelog照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">ひつまぶし（Tabelog照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">ひつまぶし</span><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">う巻き</span><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">限定甜點</span></p></div></div>
+
+<!-- 17. 鳥開総本家 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-semibold">7/27 名駅 晚餐</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('鳥開総本家 名駅ユニモール店')">17. 鳥開総本家 名駅ユニモール店</h3><p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中村区名駅4-5-26 ユニモール地下街</p><p class="text-stone-400 text-xs mb-2">🕐 11:00–21:30 · 可刷卡</p><span class="text-amber-500 font-semibold">⭐ Google 3.9（294 則）· 全國丼グランプリ5年連続金賞</span><div class="mt-3 space-y-2"><div class="review-card bg-orange-50 p-2 rounded text-sm">⭐「名古屋コーチン親子丼，連續5年全國丼グランプリ金賞」</div><div class="review-card bg-orange-50 p-2 rounded text-sm">⭐「唐揚げ也獲最高金賞，雞肉多汁、蛋液滑嫩，加柚子七味更香」</div><div class="review-card bg-orange-50 p-2 rounded text-sm">⭐「位在ユニモール地下街、離車站近，翻桌快、白飯免費加大」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/鳥開総本家+名駅ユニモール" target="_blank"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjC4ZET1f3qt6k03WE-qtySJZCWF9i64AaWI2jktyAU6bIgcxg-YeyDDlWKYP9fzqD7HZxdv2Ogrcz-t0ePP-BxnwpG_NUfm6nItLVZgW41p8lxe3vul2fK0qkHuk9ZTj418Gcx1lqxgcoy3EEA=s4800-w800" alt="親子丼與唐揚げ（Google Maps 照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">親子丼與唐揚げ（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs mx-1">名古屋コーチン親子丼</span><span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs mx-1">唐揚げセット</span></p></div></div>
+
+<!-- 18. 皇亭 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-semibold">7/28 榮 晚餐</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('皇亭 Kotei')">18. 皇亭 Kotei（焼肉食べ放題）</h3><p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中区栄2-14-11</p><p class="text-stone-400 text-xs mb-2">🕐 17:00–24:00 · 可刷卡 · 建議預約</p><span class="text-amber-500 font-semibold">⭐ Google 4.1（529 則）</span><div class="mt-3 space-y-2"><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「焼肉食べ放題，和牛品質在水準之上，ハラミ（橫膈膜）柔嫩」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「食べ放題＋飲み放題價格划算，適合家族聚餐」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「服務品質評價兩極、尖峰較忙；日式座席（跪坐）對長輩較辛苦」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/焼肉+皇亭+名古屋+栄" target="_blank"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjA3D_i14hOrda7c8CD2ZLLnESAmsrsUR5DN7N71xBWZ_igXyFTb1jCSeoiq3PlHCtd8lsV7_VEiqnaFR_piWJwYKandRxHWKiHr9c4tS2L--25TqMu6xARUUzfaKM-pPf5MTNjVkoT1toPpFQ=s4800-w800" alt="燒肉吃到飽（Google Maps 照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">燒肉（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">和牛食べ放題</span><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">ハラミ</span><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">海鮮・帆立</span></p></div></div>
+
+<!-- 19. 李さんの台湾名物屋台 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs font-semibold">7/29 大須商店街 邊走邊吃</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('李さんの台湾名物屋台')">19. 李さんの台湾名物屋台</h3><p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中区大須3-35-10</p><p class="text-stone-400 text-xs mb-2">🕐 12:00–18:00（週六日 11:00 起）· 只收現金</p><span class="text-amber-500 font-semibold">⭐ Google 4.0（485 則）</span><div class="mt-3 space-y-2"><div class="review-card bg-yellow-50 p-2 rounded text-sm">⭐「現炸台灣雞排，外皮酥脆、雞腿肉多汁，可選多種口味與辣度」</div><div class="review-card bg-yellow-50 p-2 rounded text-sm">⭐「杯裝設計方便邊走邊吃，是大須商店街人氣小吃」</div><div class="review-card bg-yellow-50 p-2 rounded text-sm">⭐「只收現金；人氣高常需排隊，地瓜薯條與芝麻茶也受好評」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/李さんの台湾名物屋台+大須" target="_blank"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjA50VoyzR3I-kr_oZ81SGtZzrFe8OGdF7bxFXka4fXo5xd9NJ_zdG7BvCdCyUtvAS7eRJGDIXheFWsITacLITsGFjcAITForuWN_sNlG_Z1bgcmTJ2zm55-3Yt3hXJb7fTCYxQEqYt2GnVmvwFwOx8CrA=s4800-w800" alt="台灣炸雞排（Google Maps 照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">台灣炸雞排（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs mx-1">台湾大雞排</span><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs mx-1">地瓜薯條</span><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs mx-1">芝麻茶</span></p></div></div>
+
+<!-- 20. 柳橋中央市場 -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-semibold">7/30 名古屋駅 早晨 必吃</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('柳橋中央市場')">20. 柳橋中央市場</h3><p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中村区名駅4-15-2</p><p class="text-stone-400 text-xs mb-2">🕐 4:00–10:00 · 週三、週日休市</p><span class="text-amber-500 font-semibold">⭐ Google 4.0（1863 則）</span><div class="mt-3 space-y-2"><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「名古屋站旁的市場，早晨有新鮮魚生、壽司與海鮮丼」</div><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「價格便宜、選擇多，3色海鮮丼（鮪魚／鮭魚／鰤魚）受歡迎」</div><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「週三、週日休市，建議平日一早前往」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/柳橋中央市場+名古屋" target="_blank"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjBqNt6HGiniEGKyn0d8h0U6DqWHzOygfR0Q7RY2sB4R-YxZsn0P4v0MB_Z7cfcLYU5yt7qw8kdQuUiameZZTE3540f3FDfBuBRiVe3zr_Bnh-wMkMLSV0C9cBXro5uOXETd1hExYK_EUhjkKQ=s4800-w800" alt="市場海鮮（Google Maps 照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">市場海鮮（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">海鮮丼</span><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">握壽司</span><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">生魚片</span></p></div></div>
+
+<!-- 21. Piyorin SHOP -->
+<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-semibold">必吃 名古屋駅</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('Piyorin SHOP')">21. Piyorin SHOP（ぴよりん）</h3><p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中村区名駅1-1-4 JR名古屋駅内</p><p class="text-stone-400 text-xs mb-2">🕐 9:00–20:00 · 補貨時段約 10:00/14:00/18:00</p><span class="text-amber-500 font-semibold">⭐ Google 4.1（609 則）· 名古屋人氣伴手禮</span><div class="mt-3 space-y-2"><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「名古屋コーチン雞蛋做的布丁慕斯蛋糕，造型超可愛、不甜膩」</div><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「補貨時段約10:00/14:00/18:00，人氣口味容易售完」</div><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「蛋糕很脆弱，平安帶回飯店是『ぴよりんチャレンジ』」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/Piyorin+名古屋駅" target="_blank"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjDMTTasThZ9gPPJMrG-gfZyJhfBi_85Lfw0gZBM2jRrDARUEh2Vm4fIEfPetdicpNLaaAmmxz6tDaPbD3yhuQfEBwMgH6nwVCCse0oFDDTI0r8QmKox-ODDnhlUwphZgN-BKwIXGyUUld2Tb8zFDb6qsQ=s4800-w800" alt="小雞蛋糕ぴよりん（Google Maps 照片）" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">ぴよりん（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">ぴよりん（原味）</span><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">いちご</span><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">チョコ</span></p></div></div>
+
+</section>
+
+<!-- ⚠️ 提醒 -->
+<section class="mb-8 bg-red-50 rounded-xl p-5 border border-red-200">
+  <h3 class="text-lg font-bold text-red-700">⚠️ 實用提醒</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 text-sm">
+    <p>💳 <strong>麺家獅子丸</strong> — 食券機點餐，現金/Suica</p>
+    <p>💳 <strong>飛騨こって牛</strong> — 只收現金，週二公休</p>
+    <p>💳 <strong>橋本煎餅堂</strong> — 只收現金</p>
+    <p>🕐 <strong>麺屋白川</strong> — 週二公休，只營業到15:00</p>
+    <p>🕐 <strong>味処古川</strong> — 只營業到14:00</p>
+    <p>💳 <strong>嘉門次小屋</strong> — 只收現金，午餐要早點排隊</p>
+    <p>💳 <strong>あみだが滝荘</strong> — 只收現金，暑假建議一開店就到</p>
+    <p>📅 <strong>魚寅</strong> — 週二公休，現金結帳、建議先訂位</p>
+    <p>📅 <strong>あつた蓬莱軒</strong> — 週二公休，建議預約或09:30先去登記</p>
+    <p>💳 <strong>李さんの台湾名物屋台</strong> — 只收現金</p>
+    <p>📅 <strong>柳橋中央市場</strong> — 週三、週日休市，早上4:00–10:00</p>
+    <p>🐤 <strong>Piyorin</strong> — 補貨 10:00/14:00/18:00，易售完</p>
+  </div>
+</section>
+
+<footer class="text-center text-stone-400 text-xs py-4">
+  <p>資料來源：Tabelog · Google Maps（查詢日期 2026-08-04）</p>
+  <p>行程依據：ref/2026名古屋10日遊(行程-無樂高攻略).html｜名古屋10日遊美食地圖 2026/07/21–30</p>
+</footer>
+
+</div>
+
+<script>
+var map = L.map('map').setView([35.92, 137.08], 8);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  maxZoom: 18
+}).addTo(map);
+
+var stores = [
+  { name: '麺家獅子丸', lat: 35.1744608, lng: 136.8793602, emoji: '🍜', color: 'red', day: '7/21 晚餐', gmap: 'https://www.google.com/maps/search/麺家+獅子丸+名古屋' },
+  { name: '世界の山ちゃん 名駅', lat: 35.1706834, lng: 136.8877998, emoji: '🍗', color: 'orange', day: '7/21 消夜', gmap: 'https://www.google.com/maps/search/世界の山ちゃん+名駅+名古屋' },
+  { name: '高山プリン亭', lat: 36.1413271, lng: 137.2598199, emoji: '🍮', color: 'purple', day: '7/22 高山', gmap: 'https://www.google.com/maps/search/高山プリン亭' },
+  { name: '橋本煎餅堂', lat: 36.1420090, lng: 137.2594340, emoji: '🍘', color: 'yellow', day: '7/22 高山', gmap: 'https://www.google.com/maps/search/橋本煎餅+高山' },
+  { name: '飛騨こって牛', lat: 36.1422010, lng: 137.2593308, emoji: '🥩', color: 'green', day: '7/22 高山', gmap: 'https://www.google.com/maps/search/飛騨こって牛' },
+  { name: '麺屋白川', lat: 36.1427221, lng: 137.2568033, emoji: '🍜', color: 'red', day: '7/22 高山', gmap: 'https://www.google.com/maps/search/麺屋白川+高山' },
+  { name: '味処古川', lat: 36.2357531, lng: 137.1852145, emoji: '🍲', color: 'yellow', day: '7/23 古川', gmap: 'https://www.google.com/maps/search/味処古川+飛騨古川' },
+  { name: '味の与平', lat: 36.1406775, lng: 137.2600858, emoji: '🥩', color: 'green', day: '7/23 高山', gmap: 'https://www.google.com/maps/search/味の与平+高山' },
+  { name: 'アルプスのパン屋さん 白樺平', lat: 36.2824389, lng: 137.5804894, emoji: '🥐', color: 'pink', day: '7/24 新穗高', gmap: 'https://www.google.com/maps/search/アルプスのパン屋さん+白樺平' },
+  { name: '嘉門次小屋', lat: 36.2527944, lng: 137.6644112, emoji: '🐟', color: 'blue', day: '7/25 上高地', gmap: 'https://www.google.com/maps/search/嘉門次小屋+上高地' },
+  { name: 'あみだが滝荘', lat: 35.9588796, lng: 136.8205759, emoji: '🍜', color: 'gray', day: '7/25 郡上白鳥', gmap: 'https://www.google.com/maps/search/あみだが滝荘+郡上' },
+  { name: '釜ヶ滝 滝茶屋', lat: 35.6408718, lng: 136.9283961, emoji: '🎣', color: 'gray', day: '7/25 郡上', gmap: 'https://www.google.com/maps/search/釜ヶ滝+滝茶屋+郡上' },
+  { name: '魚寅', lat: 35.7481061, lng: 136.9556355, emoji: '🐟', color: 'blue', day: '7/25 郡上八幡', gmap: 'https://www.google.com/maps/search/魚寅+郡上八幡+うなぎ' },
+  { name: 'ぴち天 本店', lat: 35.1739119, lng: 136.8833401, emoji: '🍣', color: 'blue', day: '7/26 名駅', gmap: 'https://www.google.com/maps/search/魚河岸本舗+ぴち天+本店' },
+  { name: 'DURGA 名古屋港店', lat: 35.0928410, lng: 136.8815955, emoji: '🍛', color: 'orange', day: '7/27 名古屋港', gmap: 'https://www.google.com/maps/search/インド料理ドルーガ+名古屋港' },
+  { name: 'あつた蓬莱軒 神宮店', lat: 35.1222700, lng: 136.9085645, emoji: '🐟', color: 'blue', day: '7/27 熱田', gmap: 'https://www.google.com/maps/search/あつた蓬莱軒+神宮店' },
+  { name: '鳥開総本家 名駅ユニモール店', lat: 35.1719069, lng: 136.8871246, emoji: '🐔', color: 'orange', day: '7/27 名駅', gmap: 'https://www.google.com/maps/search/鳥開総本家+名駅ユニモール' },
+  { name: '皇亭 Kotei', lat: 35.1658091, lng: 136.9022236, emoji: '🥩', color: 'green', day: '7/28 榮', gmap: 'https://www.google.com/maps/search/焼肉+皇亭+名古屋+栄' },
+  { name: '李さんの台湾名物屋台', lat: 35.1584318, lng: 136.9038132, emoji: '🍗', color: 'yellow', day: '7/29 大須', gmap: 'https://www.google.com/maps/search/李さんの台湾名物屋台+大須' },
+  { name: '柳橋中央市場', lat: 35.1699909, lng: 136.8880404, emoji: '🐟', color: 'blue', day: '7/30 早晨', gmap: 'https://www.google.com/maps/search/柳橋中央市場+名古屋' },
+  { name: 'Piyorin SHOP', lat: 35.1702467, lng: 136.8829448, emoji: '🐤', color: 'purple', day: '必吃', gmap: 'https://www.google.com/maps/search/Piyorin+名古屋駅' }
+];
+
+var colorMap = { red:'#ef4444', orange:'#f97316', yellow:'#eab308', green:'#22c55e', blue:'#3b82f6', purple:'#a855f7', pink:'#ec4899', gray:'#6b7280' };
+
+stores.forEach(function(s, i) {
+  var marker = L.marker([s.lat, s.lng], {
+    title: s.name,
+    icon: L.divIcon({ className: '', html: '<div class="category-marker" style="background:' + colorMap[s.color] + '"></div>', iconSize: [18, 18], iconAnchor: [9, 9] })
+  }).addTo(map).bindPopup(
+    '<b>' + s.emoji + ' ' + s.name + '</b><br>' +
+    '<small>' + s.day + '</small><br>' +
+    '<a href="' + s.gmap + '" target="_blank">📍 查看 Google 地圖</a>'
+  );
+  s.marker = marker;
+});
+
+function panToStore(name) {
+  var s = stores.find(function(x) { return x.name === name; });
+  if (s) {
+    document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    map.setView([s.lat, s.lng], 15);
+    setTimeout(function() { map.invalidateSize(); }, 450);
+    s.marker.openPopup();
+  }
+}
+
+// 快速總覽表的店名可直接帶到地圖（名稱與 stores 一致）
+document.querySelectorAll('table tbody tr').forEach(function(row) {
+  var nameCell = row.cells[1];
+  if (!nameCell) return;
+  var tableName = nameCell.textContent.trim();
+  if (stores.some(function(s) { return s.name === tableName; })) {
+    nameCell.classList.add('cursor-pointer', 'hover:text-amber-600');
+    nameCell.title = '點擊移至地圖';
+    nameCell.addEventListener('click', function() { panToStore(tableName); });
+  }
+});
+
+// 📍 讀取手機目前位置並顯示在地圖上
+var userMarker = null;
+function locateUser() {
+  var btn = document.getElementById('locateBtn');
+  if (!navigator.geolocation) { alert('此裝置或瀏覽器不支援定位功能'); return; }
+  btn.disabled = true;
+  btn.textContent = '📍 定位中…';
+  btn.classList.add('opacity-60');
+  navigator.geolocation.getCurrentPosition(function (pos) {
+    var lat = pos.coords.latitude;
+    var lng = pos.coords.longitude;
+    if (userMarker) { map.removeLayer(userMarker); }
+    userMarker = L.marker([lat, lng], {
+      icon: L.divIcon({ className: '', html: '<div class="user-dot"></div>', iconSize: [18, 18], iconAnchor: [9, 9] })
+    }).addTo(map).bindPopup(
+      '<b>📍 你目前的位置</b><br>' +
+      '<a href="https://www.google.com/maps/search/?api=1&query=' + lat + ',' + lng + '" target="_blank">在 Google Maps 開啟</a>'
+    );
+    map.setView([lat, lng], 15);
+    setTimeout(function () { map.invalidateSize(); }, 450);
+    userMarker.openPopup();
+    btn.textContent = '📍 我的位置';
+    btn.disabled = false;
+    btn.classList.remove('opacity-60');
+  }, function (err) {
+    var msg = '定位失敗';
+    if (err && err.code === 1) { msg = '定位被拒絕：請到瀏覽器/手機設定允許位置權限'; }
+    else if (err && err.code === 2) { msg = '定位失敗：暫時收不到 GPS 訊號，請到空曠處再試'; }
+    else if (err && err.code === 3) { msg = '定位逾時：請到空曠處再試一次'; }
+    alert(msg);
+    btn.textContent = '📍 我的位置';
+    btn.disabled = false;
+    btn.classList.remove('opacity-60');
+  }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 });
+}
+</script>
+</body>
+</html>

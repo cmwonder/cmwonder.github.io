@@ -3,768 +3,468 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🍜 名古屋美食地圖 2026/08｜評論 × 推薦餐點</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<title>🐾 名古屋小動物收藏館</title>
 <style>
-.leaflet-container { height: 500px; width: 100%; border-radius: 12px; }
-.food-img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; background: linear-gradient(135deg, #fef3c7, #fde68a, #fbbf24); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
-.review-card { border-left: 4px solid #f59e0b; }
-.star { color: #f59e0b; }
-.section-title { border-bottom: 3px solid #f59e0b; padding-bottom: 0.25rem; display: inline-block; }
-.category-marker { width: 18px; height: 18px; border: 3px solid white; border-radius: 50%; box-shadow: 0 1px 5px rgba(0,0,0,.55); }
+  :root {
+    --cream: #fff8ef;
+    --pink: #ffb7c5;
+    --peach: #ffd9a0;
+    --mint: #b8e6d0;
+    --brown: #8b5e3c;
+    --text: #5c4a3a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Comic Sans MS", "Chalkboard SE", "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", cursive, sans-serif;
+    background: linear-gradient(180deg, #bfe6ff 0%, #dff3ff 45%, var(--cream) 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--text);
+  }
+
+  /* ---- floating clouds ---- */
+  .cloud {
+    position: fixed;
+    background: #ffffffcc;
+    border-radius: 999px;
+    filter: blur(1px);
+    animation: drift linear infinite;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .cloud::before, .cloud::after {
+    content: "";
+    position: absolute;
+    background: #ffffffcc;
+    border-radius: 50%;
+  }
+  .cloud::before { width: 60%; height: 160%; top: -70%; left: 15%; }
+  .cloud::after  { width: 45%; height: 130%; top: -40%; right: 12%; }
+  .c1 { width: 120px; height: 38px; top: 8%;  animation-duration: 42s; }
+  .c2 { width: 90px;  height: 28px; top: 20%; animation-duration: 55s; animation-delay: -20s; }
+  .c3 { width: 150px; height: 45px; top: 40%; animation-duration: 65s; animation-delay: -40s; opacity: .7; }
+  @keyframes drift {
+    from { transform: translateX(-180px); }
+    to   { transform: translateX(calc(100vw + 180px)); }
+  }
+
+  /* ---- twinkling stars (pure CSS shapes) ---- */
+  .sparkle {
+    position: fixed;
+    width: 14px; height: 14px;
+    background: #ffe98a;
+    clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+    animation: twinkle 3s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes twinkle {
+    0%, 100% { transform: scale(.7) rotate(0deg); opacity: .45; }
+    50%      { transform: scale(1.15) rotate(25deg); opacity: 1; }
+  }
+
+  /* ---- ground grass ---- */
+  .ground {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: 90px;
+    background: linear-gradient(180deg, #9be39b, #6ccf6c);
+    border-radius: 50% 50% 0 0 / 24px 24px 0 0;
+    z-index: 0;
+  }
+  .ground::after {
+    content: "";
+    position: absolute;
+    top: -14px; left: 0; right: 0;
+    height: 28px;
+    background: repeating-linear-gradient(90deg,
+      transparent 0 24px,
+      #8ed98e 24px 30px,
+      transparent 30px 70px);
+    border-radius: 50%;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 48px 20px 140px;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    color: var(--brown);
+    text-shadow: 2px 2px 0 #fff, 0 0 18px #ffffffaa;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+  h1 .paw { flex: 0 0 auto; animation: bounce 2.6s ease-in-out infinite; }
+  h1 .paw.flip { transform: scaleX(-1); }
+  .sub {
+    font-size: 1.05rem;
+    color: #7a6a55;
+    margin-bottom: 44px;
+    text-shadow: 0 1px 0 #fff;
+  }
+
+  /* ---- card grid ---- */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+  }
+  .card {
+    position: relative;
+    background: #fff;
+    border-radius: 28px;
+    padding: 118px 24px 28px;
+    box-shadow: 0 10px 24px #0000001a, 0 2px 0 #0000000d inset;
+    border: 4px solid #fff;
+    outline: 3px solid transparent;
+    transition: transform .25s ease, box-shadow .25s ease, outline-color .25s ease;
+    text-decoration: none;
+    color: var(--text);
+    display: block;
+  }
+  .card:hover {
+    transform: translateY(-8px) rotate(-1deg);
+    box-shadow: 0 18px 34px #00000026;
+    outline-color: var(--pink);
+  }
+  .card:active { transform: translateY(-2px) scale(.98); }
+
+  .card .badge {
+    position: absolute;
+    top: 18px; right: 18px;
+    font-size: .78rem;
+    background: var(--mint);
+    color: #2d6a4f;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-weight: bold;
+  }
+  .card.plan .badge { background: var(--peach); color: #8a5a1f; }
+
+  .card h2 { font-size: 1.4rem; margin-bottom: 8px; }
+  .card p { font-size: .92rem; color: #7a6a55; line-height: 1.6; }
+
+  .go {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    background: var(--pink);
+    color: #7c2d3d;
+    font-weight: bold;
+    padding: 8px 22px;
+    border-radius: 999px;
+    font-size: .95rem;
+    box-shadow: 0 4px 0 #e08ba0;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .go svg { transition: transform .2s ease; }
+  .card.plan .go { background: var(--peach); box-shadow: 0 4px 0 #e0b26b; color: #7c4a12; }
+  .card.trip .go { background: var(--mint); box-shadow: 0 4px 0 #7bc9a8; color: #2d6a4f; }
+  .card:hover .go { transform: translateY(-2px); box-shadow: 0 6px 0 #e08ba0; }
+  .card:hover .go svg { transform: translateX(3px); }
+  .card.plan:hover .go { box-shadow: 0 6px 0 #e0b26b; }
+  .card.trip:hover .go { box-shadow: 0 6px 0 #7bc9a8; }
+
+  /* ---- animals ---- */
+  .animal {
+    position: absolute;
+    top: -78px;
+    left: 50%;
+    width: 124px;
+    height: 124px;
+    filter: drop-shadow(0 8px 8px #00000022);
+  }
+  .animal svg { width: 100%; height: 100%; display: block; }
+  .animal.bear { animation: sway 3.6s ease-in-out infinite; }
+  .animal.cat  { animation: bounce 2.4s ease-in-out infinite; }
+  .animal.bunny{ animation: hop 2.8s ease-in-out infinite; }
+
+  @keyframes hop {
+    0%, 100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+    25%      { transform: translateX(-50%) translateY(-16px) rotate(-4deg); }
+    55%      { transform: translateX(-50%) translateY(0) rotate(2deg); }
+    75%      { transform: translateX(-50%) translateY(-7px) rotate(-2deg); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+    30%      { transform: translateX(-50%) translateY(-14px) rotate(-3deg); }
+    60%      { transform: translateX(-50%) translateY(0) rotate(2deg); }
+  }
+  @keyframes sway {
+    0%, 100% { transform: translateX(-50%) rotate(-5deg); }
+    50%      { transform: translateX(-50%) rotate(5deg); }
+  }
+
+  /* SVG part animations */
+  .ear, .tail, .flower, .pot, .carrot {
+    transform-box: fill-box;
+  }
+  .ear   { animation: earwig 2.8s ease-in-out infinite; transform-origin: bottom center; }
+  .cat .ear { animation-delay: .4s; }
+  .bunny .ear { animation-delay: .8s; }
+  .tail  { animation: tailwag 1.6s ease-in-out infinite; transform-origin: right center; }
+  .flower{ animation: earwig 2.2s ease-in-out infinite; transform-origin: bottom center; }
+  .pot   { animation: potbob 2.4s ease-in-out infinite; }
+  .carrot{ animation: potbob 2s ease-in-out infinite; }
+  @keyframes earwig {
+    0%, 100% { transform: rotate(0deg); }
+    35%      { transform: rotate(-14deg); }
+    65%      { transform: rotate(6deg); }
+  }
+  @keyframes tailwag {
+    0%, 100% { transform: rotate(-12deg); }
+    50%      { transform: rotate(16deg); }
+  }
+  @keyframes potbob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-4px); }
+  }
+
+  footer {
+    margin-top: 46px;
+    font-size: .85rem;
+    color: #8a7a68;
+    text-shadow: 0 1px 0 #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  footer .heart { display: inline-block; animation: bounce 1.4s ease-in-out infinite; }
+
+  @media (max-width: 520px) {
+    h1 { font-size: 1.7rem; gap: 8px; }
+    h1 .paw { width: 26px; height: 26px; }
+    .animal { width: 104px; height: 104px; top: -66px; }
+    .card { padding-top: 100px; }
+  }
 </style>
 </head>
-<body class="bg-stone-50 text-stone-800 font-sans">
-<div class="max-w-4xl mx-auto px-4 py-6">
+<body>
 
-<!-- Header -->
-<header class="text-center mb-8">
-  <h1 class="text-4xl font-bold text-amber-600 mb-2">🍜 名古屋美食地圖 2026/08</h1>
-  <p class="text-stone-500">8/9–8/14｜評論摘要 × 推薦餐點 × 分類地圖導航</p>
-</header>
+  <!-- sky decorations -->
+  <div class="cloud c1" style="left:-120px"></div>
+  <div class="cloud c2" style="left:-90px"></div>
+  <div class="cloud c3" style="left:-150px"></div>
+  <span class="sparkle" style="top:14%; left:8%;  animation-delay:0s;   background:#ffe98a"></span>
+  <span class="sparkle" style="top:24%; right:10%; animation-delay:.8s; width:11px; height:11px; background:#ffd0e3"></span>
+  <span class="sparkle" style="top:56%; left:5%;  animation-delay:1.6s; background:#ffb7c5"></span>
+  <span class="sparkle" style="top:48%; right:6%;  animation-delay:2.2s; width:9px; height:9px; background:#c9f2d8"></span>
+  <div class="ground"></div>
 
-<!-- 🗺️ 地圖 -->
-<section class="mb-8">
-  <h2 class="text-2xl font-bold section-title mb-4">🗺️ 全部店家 GPS 位置</h2>
-  <div id="map"></div>
-  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mt-3 text-xs">
-    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-red-500"></span> 紅｜拉麵、烏龍、蕎麥、棊子麵</span>
-    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-orange-500"></span> 橙｜名古屋味噌、炸豬排、肉料理</span>
-    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-yellow-500"></span> 黃｜白飯、丼飯、定食、牛舌</span>
-    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-green-500"></span> 綠｜犬山城下町小吃</span>
-    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-blue-500"></span> 藍｜大須鹹食、披薩、喫茶</span>
-    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-purple-500"></span> 紫｜大須甜點、現做點心</span>
-    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-pink-500"></span> 粉｜鶴舞冰品、和菓子</span>
-    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-gray-500"></span> 灰｜採買與園區輕食</span>
-  </div>
-</section>
+  <div class="wrap">
+    <h1>
+      <svg class="paw" viewBox="0 0 40 40" width="36" height="36" aria-hidden="true">
+        <ellipse cx="20" cy="27" rx="10.5" ry="8.5" fill="#c98f62"/>
+        <circle cx="9.5" cy="14" r="4.6" fill="#c98f62"/>
+        <circle cx="20" cy="10" r="4.6" fill="#c98f62"/>
+        <circle cx="30.5" cy="14" r="4.6" fill="#c98f62"/>
+        <circle cx="20" cy="21" r="3" fill="#e8b48c" opacity=".6"/>
+      </svg>
+      名古屋小動物收藏館
+      <svg class="paw flip" viewBox="0 0 40 40" width="36" height="36" aria-hidden="true">
+        <ellipse cx="20" cy="27" rx="10.5" ry="8.5" fill="#c98f62"/>
+        <circle cx="9.5" cy="14" r="4.6" fill="#c98f62"/>
+        <circle cx="20" cy="10" r="4.6" fill="#c98f62"/>
+        <circle cx="30.5" cy="14" r="4.6" fill="#c98f62"/>
+        <circle cx="20" cy="21" r="3" fill="#e8b48c" opacity=".6"/>
+      </svg>
+    </h1>
+    <p class="sub">點一下動物卡片，直接帶你去看秘密筆記</p>
 
-<!-- 📊 店家總覽表格 -->
-<section class="mb-8">
-  <h2 class="text-2xl font-bold section-title mb-4">📊 快速總覽</h2>
-  <div class="overflow-x-auto rounded-xl shadow">
-    <table class="min-w-full bg-white text-sm">
-      <thead class="bg-amber-100 text-amber-900">
-        <tr><th class="p-2 text-left">#</th><th class="p-2 text-left">店家</th><th class="p-2 text-left">評分</th><th class="p-2 text-left">分類</th><th class="p-2 text-left">位置</th></tr>
-      </thead>
-      <tbody class="divide-y">
-        <tr><td class="p-2">1</td><td class="p-2 font-semibold">名古屋辛麺 鯱輪</td><td class="p-2"><span class="star">★★★★</span> 3.56</td><td class="p-2">辛味拉麵</td><td class="p-2">栄 熱田神宮</td></tr>
-        <tr><td class="p-2">2</td><td class="p-2 font-semibold">宮棊子麵 神宮店</td><td class="p-2"><span class="star">★★★★</span> 3.47</td><td class="p-2">棊子麵</td><td class="p-2">熱田神宮內</td></tr>
-        <tr><td class="p-2">3</td><td class="p-2 font-semibold">驛釜棊子麵 中央通り</td><td class="p-2"><span class="star">★★★★</span> 3.49</td><td class="p-2">棊子麵</td><td class="p-2">JR名古屋站內</td></tr>
-        <tr><td class="p-2">4</td><td class="p-2 font-semibold">芭蕉庵 蕎麥麵</td><td class="p-2"><span class="star">★★★</span> 3.16</td><td class="p-2">蕎麥麵</td><td class="p-2">名花之里內</td></tr>
-        <tr><td class="p-2">5</td><td class="p-2 font-semibold">氣晴亭</td><td class="p-2"><span class="star">★★★★</span> 4.1</td><td class="p-2">味噌炸豬排</td><td class="p-2">中区千代田</td></tr>
-        <tr><td class="p-2">6</td><td class="p-2 font-semibold">Ramen 十夢</td><td class="p-2"><span class="star">★★★★</span> 3.63</td><td class="p-2">拌麵/拉麵</td><td class="p-2">昭和区御器所</td></tr>
-        <tr><td class="p-2">7</td><td class="p-2 font-semibold">若鯱家 名古屋駅ESCA</td><td class="p-2"><span class="star">★★★★</span> 3.6</td><td class="p-2">咖哩烏龍</td><td class="p-2">車站地下街ESCA</td></tr>
-        <tr><td class="p-2">8</td><td class="p-2 font-semibold">千吉 WINC AICHI</td><td class="p-2"><span class="star">★★★</span> 3.3</td><td class="p-2">烏龍麵</td><td class="p-2">中村区名站</td></tr>
-        <tr><td class="p-2">9</td><td class="p-2 font-semibold">鯱乃家</td><td class="p-2"><span class="star">★★★</span> 3.3</td><td class="p-2">咖哩烏龍</td><td class="p-2">北区田幡</td></tr>
-        <tr><td class="p-2">10</td><td class="p-2 font-semibold">山虎</td><td class="p-2"><span class="star">★★★★</span> 3.48</td><td class="p-2">味噌關東煮</td><td class="p-2">大名古屋ビル 3F</td></tr>
-      </tbody>
-<tr><td class="p-2">11</td><td class="p-2 font-semibold">米寅 本店</td><td class="p-2"><span class="star">★★★★</span> 3.83</td><td class="p-2">越光米</td><td class="p-2">UNIMALL 地下街</td></tr>
-<tr><td class="p-2">12</td><td class="p-2 font-semibold">酢重</td><td class="p-2"><span class="star">★★★★</span> 3.9+</td><td class="p-2">銅釜現煮米飯</td><td class="p-2">Midland Square 42F</td></tr>
-<tr><td class="p-2">13</td><td class="p-2 font-semibold">駅前の店</td><td class="p-2"><span class="star">★★★★</span> 4.0</td><td class="p-2">新潟魚沼越光米（釜炊）</td><td class="p-2">名古屋駅太閤通口步行2分</td></tr>
-<tr><td class="p-2">14</td><td class="p-2 font-semibold">ある哥</td><td class="p-2"><span class="star">★★★★</span> 3.6</td><td class="p-2">新潟產越光米定食</td><td class="p-2">名古屋市内</td></tr>
-<tr><td class="p-2">15</td><td class="p-2 font-semibold">加藤軒 MATSUMURA</td><td class="p-2"><span class="star">★★★★</span> 3.6</td><td class="p-2">北海道七星米・砂鍋飯</td><td class="p-2">大名古屋大樓 3F</td></tr>
-<tr><td class="p-2">16</td><td class="p-2 font-semibold">メツゲライ・イノウエ</td><td class="p-2"><span class="star">★★★</span> 3.5</td><td class="p-2">石川縣百萬石米・肉飯糰</td><td class="p-2">大名古屋大樓 B1F</td></tr>
-<tr><td class="p-2">17</td><td class="p-2 font-semibold">酉しず</td><td class="p-2"><span class="star">★★★★</span> 4.0</td><td class="p-2">名古屋交趾雞麥飯</td><td class="p-2">大名古屋大樓 1F</td></tr>
-<tr><td class="p-2">18</td><td class="p-2 font-semibold">味的牛た喜助</td><td class="p-2"><span class="star">★★★★</span> 3.8</td><td class="p-2">仙台一目惚れ米＋大麥</td><td class="p-2">名古屋駅附近</td></tr>
-<tr><td class="p-2">19</td><td class="p-2 font-semibold">犬山牛太郎</td><td class="p-2"><span class="star">★★★★</span> Tabelog（有評論）</td><td class="p-2">飛驒牛握壽司</td><td class="p-2">犬山城下町</td></tr>
-<tr><td class="p-2">20</td><td class="p-2 font-semibold">肉兵衛</td><td class="p-2"><span class="star">★★★★</span> Tabelog（有評論）</td><td class="p-2">飛驒牛握壽司</td><td class="p-2">犬山城下町</td></tr>
-<tr><td class="p-2">21</td><td class="p-2 font-semibold">山田五平餅店</td><td class="p-2"><span class="star">★★★★</span> Tabelog 3.57</td><td class="p-2">五平餅</td><td class="p-2">犬山城下町</td></tr>
-<tr><td class="p-2">22</td><td class="p-2 font-semibold">壽俵屋</td><td class="p-2"><span class="star">★★★★</span> Jalan 4.5</td><td class="p-2">醬油愛心烤飯糰</td><td class="p-2">犬山城下町</td></tr>
-<tr><td class="p-2">23</td><td class="p-2 font-semibold">本町茶寮</td><td class="p-2"><span class="star">★★★</span> Tabelog 3.46</td><td class="p-2">味噌烤豆腐／金魚果凍蘇打</td><td class="p-2">犬山城下町</td></tr>
-<tr><td class="p-2">24</td><td class="p-2 font-semibold">松井蕎麥麵 犬山店</td><td class="p-2"><span class="star">★★★★</span> Tabelog（有照片／評論）</td><td class="p-2">限量檸檬蕎麥麵</td><td class="p-2">犬山城下町</td></tr>
-<tr><td class="p-2">25</td><td class="p-2 font-semibold">昭和橫丁</td><td class="p-2"><span class="star">★★★★</span> TripAdvisor（44 則）</td><td class="p-2">室內美食街</td><td class="p-2">犬山城下町</td></tr>
-<tr><td class="p-2">26</td><td class="p-2 font-semibold">大須德川庵</td><td class="p-2"><span class="star">★★★★</span> Yahoo!地圖（78 則）</td><td class="p-2">現搗麻糬</td><td class="p-2">大須商店街</td></tr>
-<tr><td class="p-2">27</td><td class="p-2 font-semibold">矢場とん 矢場町本店</td><td class="p-2"><span class="star">★★★</span> Tabelog 3.46</td><td class="p-2">味噌炸豬排</td><td class="p-2">大須3-6-18</td></tr>
-<tr><td class="p-2">28</td><td class="p-2 font-semibold">KONPARU 大須店</td><td class="p-2"><span class="star">★★★</span> Tabelog 3.47</td><td class="p-2">炸蝦三明治</td><td class="p-2">大須3-20-19</td></tr>
-<tr><td class="p-2">29</td><td class="p-2 font-semibold">Solo Pizza</td><td class="p-2"><span class="star">★★★</span> Tabelog 3.60</td><td class="p-2">窯烤披薩</td><td class="p-2">大須2-36-44</td></tr>
-<tr><td class="p-2">30</td><td class="p-2 font-semibold">鯛福茶庵</td><td class="p-2"><span class="star">★★★★</span> TripAdvisor 4.5</td><td class="p-2">鯛魚燒</td><td class="p-2">大須2-20-10</td></tr>
-<tr><td class="p-2">31</td><td class="p-2 font-semibold">大王チーズ10円パン</td><td class="p-2"><span class="star">★★★</span> Tabelog（有評論）</td><td class="p-2">10圓起司麵包</td><td class="p-2">大須3-30-93</td></tr>
-<tr><td class="p-2">32</td><td class="p-2 font-semibold">AEON MALL超市</td><td class="p-2"><span class="star">★★★★</span> 賣場評論／照片</td><td class="p-2">採買</td><td class="p-2">豐田紀念館附近</td></tr>
-<tr><td class="p-2">33</td><td class="p-2 font-semibold">Marseilles Bakery Restaurant</td><td class="p-2"><span class="star">★★★★</span> 園區評論／照片</td><td class="p-2">園區麵包輕食</td><td class="p-2">名花之里園區內</td></tr>
-<tr><td class="p-2">34</td><td class="p-2 font-semibold">氷菓子 冬香</td><td class="p-2"><span class="star">★★★★★</span> Google 5.0（4 則）</td><td class="p-2">夜パフェ／冰甜點</td><td class="p-2">鶴舞站西側・千代田</td></tr>
-<tr><td class="p-2">35</td><td class="p-2 font-semibold">Maaruitsuki（まるいつき）</td><td class="p-2"><span class="star">★★★★</span> Google 4.2（97 則）</td><td class="p-2">和菓子／銅鑼燒</td><td class="p-2">御器所・荒畑附近</td></tr>
-<tr><td class="p-2">36</td><td class="p-2 font-semibold">Caramellow Tsurumai Park Store</td><td class="p-2"><span class="star">★★★★</span> Google 4.0（49 則）</td><td class="p-2">焦糖甜點／Gelato</td><td class="p-2">鶴舞公園 Tsurumagarden</td></tr>
-</tbody>
-    </table>
-  </div>
-</section>
+    <div class="cards">
 
-<!-- 🍜 各店家詳細 -->
-<section class="mb-8">
-  <h2 class="text-2xl font-bold section-title mb-4">📝 各店家詳細評論與推薦</h2>
-
-<!-- 1. 辛麺 鯱輪 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-semibold">8/9 熱田神宮</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('名古屋辛麺 鯱輪')">1. 名古屋辛麺 鯱輪</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中区栄3-11-15 LRDビル 1F B</p>
-      <p class="text-stone-400 text-xs mb-2">🕐 Mon-Thu 11:30-15:00/18:00-03:00 · Fri 至05:00 · Sun 11:30-15:00</p>
-      <span class="text-amber-500 font-semibold">⭐ Tabelog 3.56（660 則）</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-amber-50 p-2 rounded text-sm">⭐5「CP值高，回訪意願強烈」</div>
-        <div class="review-card bg-amber-50 p-2 rounded text-sm">⭐4.5「旨辛にんにくラーメン極度美味，1辛已有相當辣度」</div>
-        <div class="review-card bg-amber-50 p-2 rounded text-sm">⭐4.2「Soup美味停不下來，中毒性あり」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <img src="food-photos/01-shachirin.jpg" alt="旨辛にんにくラーメン" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      <p class="text-xs text-center mt-1 text-stone-400">旨辛にんにくラーメン</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs mx-1">旨辛にんにくラーメン</span><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs mx-1">基本辛麺 (1辛)</span><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs mx-1">味噌/豚骨系</span></p>
-  </div>
-</div>
-
-<!-- 2. 宮棊子麵 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-semibold">8/9 熱田神宮</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('宮棊子麵 神宮店')">2. 宮棊子麵 神宮店</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 熱田神宮佔地內</p>
-      <p class="text-stone-400 text-xs mb-2">🕐 9:00-16:30 年中無休</p>
-      <span class="text-amber-500 font-semibold">⭐ Tabelog 3.47（1205 則）</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-blue-50 p-2 rounded text-sm">⭐5「新年造訪，宮福きしめん（1200円）值得一試」</div>
-        <div class="review-card bg-blue-50 p-2 rounded text-sm">⭐4「難得來訪熱田神宮，在此用餐，鯖魚節湯頭有滿足感」</div>
-        <div class="review-card bg-blue-50 p-2 rounded text-sm">⭐3.5「初次品嚐，湯頭鯖魚節味適中，略偏濃」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <img src="food-photos/02-miya.jpg" alt="宮福きしめん" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      <p class="text-xs text-center mt-1 text-stone-400">宮福きしめん</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">宮福きしめん (1200円)</span><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">基本きしめん</span><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">月見きしめん</span></p>
-  </div>
-</div>
-
-<!-- 3. 驛釜棊子麵 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-semibold">8/9 熱田神宮</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('驛釜棊子麵 中央通り')">3. 驛釜棊子麵 中央通り</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知縣中村區名站1-1-4 JR名古屋站內</p>
-      <p class="text-stone-400 text-xs mb-2">🕐 7:00 開始營業</p>
-      <span class="text-amber-500 font-semibold">⭐ Tabelog 3.49 / TripAdvisor 3.6（1153+ 則）</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-blue-50 p-2 rounded text-sm">⭐4「Nagoya必吃，7點就開始營業非常方便，口味地道」</div>
-        <div class="review-card bg-blue-50 p-2 rounded text-sm">⭐3.5「2026年6月造訪，車站中央通路非常好找」</div>
-        <div class="review-card bg-blue-50 p-2 rounded text-sm">⭐3「路過方便，適合趕時間的旅客」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <img src="food-photos/03-eki.jpg" alt="驛釜きしめん" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      <p class="text-xs text-center mt-1 text-stone-400">驛釜きしめん</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">驛釜きしめん</span><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">味噌煮込みきしめん</span><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">小倉トースト套餐</span></p>
-  </div>
-</div>
-
-<!-- 4. 芭蕉庵 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-semibold">8/10 名花之里</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('芭蕉庵 蕎麥麵')">4. 芭蕉庵 蕎麥麵</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 三重縣桑名市駒江270（名花之里園區內）</p>
-      <span class="text-amber-500 font-semibold">⭐ TripAdvisor 3.16（14+ 則）</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-orange-50 p-2 rounded text-sm">⭐4「溫泉後晚餐，『芭蕉庵御膳・春』內容豐富，和風感十足」</div>
-        <div class="review-card bg-orange-50 p-2 rounded text-sm">⭐3「雞南蛮蕎麥，出汁適中帶甜」</div>
-        <div class="review-card bg-orange-50 p-2 rounded text-sm">⭐3「傳統日式建築，雞肉很大塊，出汁美味」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <img src="food-photos/04-basho.jpg" alt="芭蕉庵御膳" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      <p class="text-xs text-center mt-1 text-stone-400">芭蕉庵御膳</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs mx-1">芭蕉庵御膳 (套餐)</span><span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs mx-1">雞南蛮蕎麥</span><span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs mx-1">月見蕎麥</span></p>
-    <p class="text-xs text-stone-400 mt-1">🍞 另有 <strong>Marseilles Bakery Restaurant</strong> 在園區內，白天較便宜</p>
-  </div>
-</div>
-
-<!-- 5. 氣晴亭 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-semibold">8/12 歸還機車</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('氣晴亭')">5. 氣晴亭</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中区千代田5-21-6</p>
-      <p class="text-red-500 text-xs mb-2">⚠️ 不可刷卡</p>
-      <span class="text-amber-500 font-semibold">⭐ Google Maps 4.1（60+ 則）</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-green-50 p-2 rounded text-sm">⭐5「鯛魚蓋飯CP值高到不行，在地人也推薦」</div>
-        <div class="review-card bg-green-50 p-2 rounded text-sm">⭐4「味噌炸豬排是靈魂，鯛魚蓋飯必點」</div>
-        <div class="review-card bg-green-50 p-2 rounded text-sm">⭐3.5「分量足，味噌醬汁不死鹹，1945年創業」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <img src="food-photos/05-kiharutei.jpg" alt="味噌かつ定食" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      <p class="text-xs text-center mt-1 text-stone-400">鯛魚蓋飯 + 味噌炸豬排</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">鯛魚蓋飯 (鯛めし)</span><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">味噌炸豬排定食</span><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">海老天丼</span></p>
-  </div>
-</div>
-
-<!-- 6. Ramen 十夢 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-semibold">8/12 歸還機車</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('Ramen 十夢')">6. Ramen 十夢</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市昭和区御器所2-1-2</p>
-      <p class="text-red-500 text-xs mb-2">⚠️ 週三公休 · 不可刷卡</p>
-      <span class="text-amber-500 font-semibold">⭐ Tabelog 3.63（656 則）· 拉麵百名店 2025</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-purple-50 p-2 rounded text-sm">⭐4.5「拌麵非常有特色，魚介豚骨湯底濃郁」</div>
-        <div class="review-card bg-purple-50 p-2 rounded text-sm">⭐4「湯頭層次分明，叉燒軟嫩，分量十足」</div>
-        <div class="review-card bg-purple-50 p-2 rounded text-sm">⭐3.5「義法料理人出身，創作拉麵個性十足」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <img src="food-photos/06-tomu.jpg" alt="特製まぜそば" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      <p class="text-xs text-center mt-1 text-stone-400">特製まぜそば</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">特製まぜそば (拌麵)</span><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">特製拉麵</span><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">味噌拉麵</span></p>
-  </div>
-</div>
-
-<!-- 7. 若鯱家 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-semibold">必吃美食</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('若鯱家 ESCA')">7. 若鯱家 名古屋駅エスカ店</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 名古屋車站地下街ESCA內</p>
-      <span class="text-amber-500 font-semibold">⭐ Tabelog 3.6（220+ 則）</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-amber-50 p-2 rounded text-sm">⭐5「濃郁咖哩烏龍，嗜辣者摯愛，辣度可選」</div>
-        <div class="review-card bg-amber-50 p-2 rounded text-sm">⭐4「咖哩香氣撲鼻，麵條Q彈，極太麵もちもち」</div>
-        <div class="review-card bg-amber-50 p-2 rounded text-sm">⭐3.5「菜單種類多，不只有咖哩烏龍定食」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <img src="food-photos/07-wakashachiya.jpg" alt="名物カレーうどん" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      <p class="text-xs text-center mt-1 text-stone-400">名物カレーうどん</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs mx-1">名物カレーうどん</span><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs mx-1">咖哩UJtan (沾麵)</span><span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs mx-1">咖哩烏龍定食</span></p>
-  </div>
-</div>
-
-<!-- 8. 千吉 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-semibold">必吃美食</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('千吉 WINC AICHI')">8. 千吉 WINC AICHI店</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知県中村區名站4-4-38（WINC AICHI大樓）</p>
-      <span class="text-amber-500 font-semibold">⭐ Google Maps 3.3（80+ 則）</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-stone-50 p-2 rounded text-sm">⭐4「日替午餐500円有找，CP值破表」</div>
-        <div class="review-card bg-stone-50 p-2 rounded text-sm">⭐3.5「豆皮烏龍是招牌，湯底清爽不油膩」</div>
-        <div class="review-card bg-stone-50 p-2 rounded text-sm">⭐3「商務午餐划算，普通味道」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <img src="food-photos/08-chikichi.jpg" alt="日替午餐" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      <p class="text-xs text-center mt-1 text-stone-400">日替午餐</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-stone-100 text-stone-700 px-2 py-0.5 rounded text-xs mx-1">日替午餐套餐 (~500円)</span><span class="bg-stone-100 text-stone-700 px-2 py-0.5 rounded text-xs mx-1">豆皮烏龍 (きつねうどん)</span><span class="bg-stone-100 text-stone-700 px-2 py-0.5 rounded text-xs mx-1">咖哩烏龍麵</span></p>
-  </div>
-</div>
-
-<!-- 9. 鯱乃家 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-pink-100 text-pink-700 rounded text-xs font-semibold">必吃美食</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('鯱乃家')">9. 鯱乃家</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知県佛山市北區田幡2-14-1</p>
-      <span class="text-amber-500 font-semibold">⭐ Ekiten 3.3（8+ 則）</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-pink-50 p-2 rounded text-sm">⭐5「極太麵條 + 咖哩paste質地，唯一無二的味道，吃一次就忘不了」</div>
-        <div class="review-card bg-pink-50 p-2 rounded text-sm">⭐4「名古屋咖哩烏龍名店，味道一如既往職人風格」</div>
-        <div class="review-card bg-pink-50 p-2 rounded text-sm">⭐4「即使沒停車場也總是滿座，咖哩烏龍（微辣）人氣最高」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <img src="food-photos/09-sachinoya.jpg" alt="極太咖哩烏龍" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      <p class="text-xs text-center mt-1 text-stone-400">極太咖哩烏龍</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-pink-100 text-pink-800 px-2 py-0.5 rounded text-xs mx-1">咖哩烏龍麵 (微辣)</span><span class="bg-pink-100 text-pink-800 px-2 py-0.5 rounded text-xs mx-1">極太咖哩烏龍</span><span class="bg-pink-100 text-pink-800 px-2 py-0.5 rounded text-xs mx-1">招牌定食</span></p>
-  </div>
-</div>
-
-<!-- 10. 山虎 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs font-semibold">必吃美食</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('山虎')">10. 山虎</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知県中村區名站3-28-12 大名古屋ビルヂング 3F</p>
-      <span class="text-amber-500 font-semibold">⭐ Tabelog 3.48 / Retty（418+ 則）</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-yellow-50 p-2 rounded text-sm">⭐4「味噌かつ定食午餐1200円，紅味噌出品美味」</div>
-        <div class="review-card bg-yellow-50 p-2 rounded text-sm">⭐4「味噌おでん定食 + 津島市銘酒『長珍』，環境氛圍佳」</div>
-        <div class="review-card bg-yellow-50 p-2 rounded text-sm">⭐3.5「離名古屋站很近，居酒屋提供串かつ等多種美食」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <img src="food-photos/10-yamatora.jpg" alt="味噌おでん" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      <p class="text-xs text-center mt-1 text-stone-400">味噌おでん</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs mx-1">味噌炸豬排定食 (1200円)</span><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs mx-1">味噌關東煮定食</span><span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs mx-1">串炸 (串かつ)</span></p>
-    <p class="text-xs text-stone-400 mt-1">📋 もつ焼き、おばんざい、牛すじどて飯等豐富菜單</p>
-  </div>
-</div>
-
-</section>
-
-<!-- 11. 米寅 本店 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-teal-100 text-teal-700 rounded text-xs font-semibold">越光米</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('米寅 本店')">11. 米寅 本店 (Kometora)</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中区名駅2-41-10アストラーレ名駅1F</p>
-      <p class="text-stone-400 text-xs mb-2">💳 可刷卡</p>
-      <span class="text-amber-500 font-semibold">⭐ Google 4.0 · 365 則評論</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐5「銀飯非常美味。香氣十足的越光米粒粒分明」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「牛肉旨煮重多汁又入味，讓人一碗接一碗停不下來」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「間八魚芝麻醬拌飯很適合炎熱天氣，可以輕鬆享用」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <a href="https://www.google.com/search?q=米寅 本店+名古屋+tabelog" target="_blank" title="查看更多照片">
-        <img src="food-photos/11-kometora.jpg" alt="銀飯" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
+      <!-- plan / -->
+      <a class="card plan" href="plan/food-map.html">
+        <span class="badge">plan/</span>
+        <div class="animal bear" aria-hidden="true">
+          <svg viewBox="0 0 130 130">
+            <!-- ears -->
+            <g class="ear">
+              <circle cx="38" cy="30" r="15" fill="#b97f55"/>
+              <circle cx="38" cy="30" r="7.5" fill="#f3d2ac"/>
+            </g>
+            <g class="ear">
+              <circle cx="92" cy="30" r="15" fill="#b97f55"/>
+              <circle cx="92" cy="30" r="7.5" fill="#f3d2ac"/>
+            </g>
+            <!-- head -->
+            <ellipse cx="65" cy="66" rx="44" ry="40" fill="#c98f62"/>
+            <!-- muzzle -->
+            <ellipse cx="65" cy="80" rx="21" ry="16" fill="#f6dfc2"/>
+            <!-- eyes -->
+            <circle cx="48" cy="60" r="5" fill="#3f2d20"/>
+            <circle cx="82" cy="60" r="5" fill="#3f2d20"/>
+            <circle cx="50.5" cy="57.5" r="1.8" fill="#fff"/>
+            <circle cx="84.5" cy="57.5" r="1.8" fill="#fff"/>
+            <!-- nose -->
+            <ellipse cx="65" cy="74" rx="6.5" ry="5" fill="#3f2d20"/>
+            <!-- mouth -->
+            <path d="M65 79 q-7 7 -13 4.5" stroke="#3f2d20" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            <path d="M65 79 q7 7 13 4.5" stroke="#3f2d20" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            <!-- blush -->
+            <circle cx="33" cy="72" r="5.5" fill="#ff9f9f" opacity=".65"/>
+            <circle cx="97" cy="72" r="5.5" fill="#ff9f9f" opacity=".65"/>
+            <!-- honey pot -->
+            <g class="pot">
+              <rect x="47" y="102" width="36" height="20" rx="6" fill="#f2a24e"/>
+              <rect x="47" y="100" width="36" height="7" rx="3.5" fill="#d97f2a"/>
+              <path d="M53 104 q3 9 0 14" stroke="#f7c98a" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <path d="M77 104 q-3 9 0 14" stroke="#f7c98a" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <g transform="translate(65,113)">
+                <circle cx="-3.5" cy="-2" r="3" fill="#fff"/>
+                <circle cx="3.5" cy="-2" r="3" fill="#fff"/>
+                <path d="M-6 -1 L6 -1 L6 1.5 L0 7 L-6 1.5 Z" fill="#fff"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <h2>美食地圖</h2>
+        <p>名古屋美食評論 × 推薦餐點 × 地圖，小熊的最愛，全部收藏在這裡！</p>
+        <span class="go">去看美食
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+            <path d="M3 10 h12 m-5 -5 l5 5 l-5 5" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
       </a>
-      <p class="text-xs text-center mt-1 text-stone-400">銀飯</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">銀飯</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">牛肉旨煮重</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">間八魚芝麻醬拌飯</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">現煮米飯＋明太子</span></p>
-  </div>
-</div>
 
-<!-- 12. 酢重 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-teal-100 text-teal-700 rounded text-xs font-semibold">銅釜ご飯</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('酢重')">12. 酢重 (Suju Dining)</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中区名駅1-1-3 JRゲートタワ 12F</p>
-      <p class="text-stone-400 text-xs mb-2">💳 可刷卡</p>
-      <span class="text-amber-500 font-semibold">⭐ Google 4.2 · 390 則評論</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐5「銅釜煮的米飯香氣就是不一樣，米飯愛好者必吃」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「豬角煮飯軟嫩到用筷子就能夾斷，還附味噌湯」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「醃漬生魚片料理水準很高，作為專門店無可挑剔」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <a href="https://www.google.com/search?q=酢重+名古屋+tabelog" target="_blank" title="查看更多照片">
-        <img src="food-photos/12-suju.jpg" alt="銅釜ご飯" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
+      <!-- ref / -->
+      <a class="card" href="ref/2026%E5%90%8D%E5%8F%A4%E5%B1%8B10%E6%97%A5%E9%81%8A(%E8%A1%8C%E7%A8%8B-%E7%84%A1%E6%A8%82%E9%AB%98%E6%94%BB%E7%95%A5).html">
+        <span class="badge">ref/</span>
+        <div class="animal cat" aria-hidden="true">
+          <svg viewBox="0 0 130 130">
+            <!-- tail -->
+            <path class="tail" d="M24 100 q-24 6 -17 -18 q2 -12 15 -8" stroke="#f6a94e" stroke-width="9" fill="none" stroke-linecap="round"/>
+            <!-- ears -->
+            <g class="ear">
+              <path d="M36 36 L27 8 L56 24 Z" fill="#f6a94e"/>
+              <path d="M38 32 L32 15 L51 25 Z" fill="#ffd9c4"/>
+            </g>
+            <g class="ear">
+              <path d="M94 36 L103 8 L74 24 Z" fill="#f6a94e"/>
+              <path d="M92 32 L98 15 L79 25 Z" fill="#ffd9c4"/>
+            </g>
+            <!-- head -->
+            <ellipse cx="65" cy="62" rx="42" ry="36" fill="#f8b56b"/>
+            <!-- chest patch -->
+            <ellipse cx="65" cy="76" rx="19" ry="14" fill="#fff6e8"/>
+            <!-- eyes -->
+            <ellipse cx="48" cy="58" rx="5.5" ry="6.5" fill="#3f2d20"/>
+            <ellipse cx="82" cy="58" rx="5.5" ry="6.5" fill="#3f2d20"/>
+            <circle cx="50.5" cy="55.5" r="2" fill="#fff"/>
+            <circle cx="84.5" cy="55.5" r="2" fill="#fff"/>
+            <!-- nose -->
+            <path d="M62 68 L68 68 L65 73 Z" fill="#e8879a"/>
+            <!-- mouth -->
+            <path d="M58 76 q4 4 7 0" stroke="#3f2d20" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+            <path d="M72 76 q-4 4 -7 0" stroke="#3f2d20" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+            <!-- whiskers -->
+            <g stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".95">
+              <line x1="22" y1="62" x2="40" y2="66"/>
+              <line x1="22" y1="72" x2="40" y2="72"/>
+              <line x1="108" y1="62" x2="90" y2="66"/>
+              <line x1="108" y1="72" x2="90" y2="72"/>
+            </g>
+            <!-- blush -->
+            <circle cx="36" cy="70" r="5" fill="#ff9f9f" opacity=".6"/>
+            <circle cx="94" cy="70" r="5" fill="#ff9f9f" opacity=".6"/>
+            <!-- flower on ear -->
+            <g class="flower">
+              <circle cx="103" cy="3" r="4.5" fill="#ff9ec0"/>
+              <circle cx="103" cy="-2.5" r="4.5" fill="#ffb9d4"/>
+              <circle cx="98" cy="2" r="4.5" fill="#ffb9d4"/>
+              <circle cx="108" cy="2" r="4.5" fill="#ffb9d4"/>
+              <circle cx="103" cy="2" r="3" fill="#ffd166"/>
+            </g>
+          </svg>
+        </div>
+        <h2>10日遊行程</h2>
+        <p>2026 名古屋 10 日遊（無樂高攻略），小貓的旅行手帳，滿滿行程重點！</p>
+        <span class="go">去看行程
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+            <path d="M3 10 h12 m-5 -5 l5 5 l-5 5" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
       </a>
-      <p class="text-xs text-center mt-1 text-stone-400">銅釜ご飯</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">銅釜現煮米飯丼</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">豬角煮飯＋沙拉</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">銅釜米飯＋味噌湯＋沙拉</span></p>
-  </div>
-</div>
 
-<!-- 13. 駅前の店 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-teal-100 text-teal-700 rounded text-xs font-semibold">魚沼コシヒカリ</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('駅前の店')">13. 駅前の店 (Maruya 本店)</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中区名駅1-1-4 名古屋うまいもん通り</p>
-      <p class="text-stone-400 text-xs mb-2">💳 可刷卡</p>
-      <span class="text-amber-500 font-semibold">⭐ Google 4.3 · 2245 則評論</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐5「釜煮雞蛋拌飯非常美味，就算排隊也值得一吃」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「在名古屋車站內就能輕鬆享用，這點最棒」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「星鰻料理很棒；晚上幾乎必須預約的只有本店」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <a href="https://www.google.com/search?q=駅前の店+名古屋+tabelog" target="_blank" title="查看更多照片">
-        <img src="food-photos/13-ekimae.jpg" alt="釜焚きご飯" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
+      <!-- ref/ 10日遊行程-美食地圖 -->
+      <a class="card trip" href="ref/10%E6%97%A5%E9%81%8A%E8%A1%8C%E7%A8%8B-%E7%BE%8E%E9%A3%9F%E5%9C%B0%E5%9C%96.html">
+        <span class="badge">ref/</span>
+        <div class="animal bunny" aria-hidden="true">
+          <svg viewBox="0 0 130 130">
+            <!-- ears -->
+            <g class="ear">
+              <path d="M44 40 Q40 8 52 6 Q62 6 58 38 Z" fill="#f4e8d8"/>
+              <path d="M47 36 Q45 14 52 12 Q57 12 55 36 Z" fill="#ffc9d8"/>
+            </g>
+            <g class="ear">
+              <path d="M78 38 Q74 4 86 4 Q96 6 90 40 Z" fill="#f4e8d8"/>
+              <path d="M81 36 Q79 12 86 11 Q91 12 87 36 Z" fill="#ffc9d8"/>
+            </g>
+            <!-- head -->
+            <ellipse cx="66" cy="66" rx="40" ry="36" fill="#fdf6ec"/>
+            <!-- backpack -->
+            <rect x="20" y="56" width="24" height="28" rx="9" fill="#8fd0a8"/>
+            <rect x="22" y="60" width="11" height="15" rx="4" fill="#6db98b"/>
+            <!-- eyes -->
+            <circle cx="52" cy="62" r="5" fill="#3f2d20"/>
+            <circle cx="80" cy="62" r="5" fill="#3f2d20"/>
+            <circle cx="54.5" cy="59.5" r="1.8" fill="#fff"/>
+            <circle cx="82.5" cy="59.5" r="1.8" fill="#fff"/>
+            <!-- nose -->
+            <path d="M64 72 l4 0 l-2 4 Z" fill="#f2a4b8"/>
+            <!-- mouth -->
+            <path d="M62 78 q2 3 4 0 q2 3 4 0" stroke="#3f2d20" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <!-- whiskers -->
+            <g stroke="#d8c9b8" stroke-width="1.8" stroke-linecap="round">
+              <line x1="32" y1="66" x2="44" y2="70"/>
+              <line x1="32" y1="76" x2="44" y2="74"/>
+              <line x1="100" y1="66" x2="88" y2="70"/>
+              <line x1="100" y1="76" x2="88" y2="74"/>
+            </g>
+            <!-- blush -->
+            <circle cx="41" cy="72" r="5" fill="#ffb3b3" opacity=".5"/>
+            <circle cx="91" cy="72" r="5" fill="#ffb3b3" opacity=".5"/>
+            <!-- carrot -->
+            <g class="carrot">
+              <path d="M70 98 q-2 14 6 22 q8 -6 4 -22 Z" fill="#ff9d4d"/>
+              <path d="M73 106 q4 6 4 10" stroke="#e87c2a" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <path d="M70 98 q-3 -6 -8 -8 q6 0 8 4" stroke="#6db98b" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+              <path d="M74 98 q3 -6 8 -8 q-6 0 -8 4" stroke="#6db98b" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+            </g>
+          </svg>
+        </div>
+        <h2>10日遊行程-美食地圖</h2>
+        <p>7/21–7/30 十天旅程的餐廳總集合，高山、古川、郡上到名古屋，小兔揹著背包帶路！</p>
+        <span class="go">去看行程美食
+          <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+            <path d="M3 10 h12 m-5 -5 l5 5 l-5 5" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
       </a>
-      <p class="text-xs text-center mt-1 text-stone-400">釜焚きご飯</p>
+
     </div>
+
+    <footer>
+      made with
+      <svg class="heart" viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">
+        <path d="M10 18 C4 13 1 9.5 1 6.5 C1 3.5 3.5 1.5 6 1.5 C7.8 1.5 9.3 2.5 10 4 C10.7 2.5 12.2 1.5 14 1.5 C16.5 1.5 19 3.5 19 6.5 C19 9.5 16 13 10 18 Z" fill="#ff7b9c"/>
+      </svg>
+      by 牛奶糖 &amp; friends
+    </footer>
   </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">釜煮雞蛋拌飯</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">定食套餐</span></p>
-  </div>
-</div>
 
-<!-- 14. ある哥 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-teal-100 text-teal-700 rounded text-xs font-semibold">新潟コシヒカリ</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('ある哥')">14. ある哥 (Anata to Hakata)</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中区名駅4-14-10 柳橋Food Market 7F</p>
-      <p class="text-stone-400 text-xs mb-2">💳 可刷卡</p>
-      <span class="text-amber-500 font-semibold">⭐ Google 4.7 · 1256 則評論</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐5「博多元祖拉麵讓人另眼相看，湯頭帶有陳年熟成的鮮味」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「雖然可以自由加麵，但這裡的湯頭濃度特別出色」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「軟骨等餐點都很有特色，令人驚艷」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <a href="https://www.google.com/search?q=ある哥+名古屋+tabelog" target="_blank" title="查看更多照片">
-        <img src="food-photos/14-aruko.jpg" alt="ラーメン" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      </a>
-      <p class="text-xs text-center mt-1 text-stone-400">ラーメン</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">博多元祖拉麵</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">軟骨拉麵</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">追加麵條</span></p>
-  </div>
-</div>
-
-<!-- 15. 加藤軒 MATSUMURA -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-teal-100 text-teal-700 rounded text-xs font-semibold">ななつぼし</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('加藤軒 MATSUMURA')">15. 加藤軒 MATSUMURA</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中区名駅3-28-28 Dai Nagoya Building 3F</p>
-      <p class="text-stone-400 text-xs mb-2">💳 可刷卡</p>
-      <span class="text-amber-500 font-semibold">⭐ Google 4.5 · 524 則評論</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐5「每天都有許多人排隊，牛肉料理的變化令人驚訝」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「保留昔日風味的傳統炸肉排，沒有過度修飾」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「味噌料理每次都很穩定，工作人員服務也很好」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <a href="https://www.google.com/search?q=加藤軒 MATSUMURA+名古屋+tabelog" target="_blank" title="查看更多照片">
-        <img src="food-photos/15-katsuretsu.jpg" alt="三口物" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      </a>
-      <p class="text-xs text-center mt-1 text-stone-400">三口物</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">配菜定食</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">味噌炸肉排</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">復古風炸肉排套餐</span></p>
-  </div>
-</div>
-
-<!-- 16. メツゲライ・イノウエ -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-teal-100 text-teal-700 rounded text-xs font-semibold">ひゃくまん穀</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('メツゲライ・イノウエ')">16. メツゲライ・イノウエ</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中区名駅3-28-12 Dai Nagoya Building B1</p>
-      <p class="text-stone-400 text-xs mb-2">💳 可刷卡</p>
-      <span class="text-amber-500 font-semibold">⭐ Google 3.5 · 10 則評論</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐5「百貨公司地下街竟然有這麼可愛的店，飯糰種類很多」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「很受家庭客歡迎，一定會再來」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「推薦舞茸飯糰」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <a href="https://www.google.com/search?q=メツゲライ・イノウエ+名古屋+tabelog" target="_blank" title="查看更多照片">
-        <img src="food-photos/16-metzgerei.jpg" alt="肉のおにぎり" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      </a>
-      <p class="text-xs text-center mt-1 text-stone-400">肉のおにぎり</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">覺王山培根舞茸飯糰</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">黑豬肉糕紫蘇飯糰</span></p>
-  </div>
-</div>
-
-<!-- 17. 酉しず -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-teal-100 text-teal-700 rounded text-xs font-semibold">名古屋交趾雞麥飯</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('酉しず')">17. 酉しず (Torishin)</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中区名駅3-26-8 KDXビル B1F</p>
-      <p class="text-stone-400 text-xs mb-2">💳 可刷卡</p>
-      <span class="text-amber-500 font-semibold">⭐ Google 4.2 · 1988 則評論</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐5「名古屋交趾雞專門店的親子丼不同凡響，帶皮雞肉很令人滿意」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「雞肉料理專門店的烤雞串也很精彩，離車站近、交通方便」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「能感受到酉しず對雞肉料理的講究，以後還會再訪」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <a href="https://www.google.com/search?q=酉しず+名古屋+tabelog" target="_blank" title="查看更多照片">
-        <img src="food-photos/17-torishizu.jpg" alt="名古屋交趾雞麥飯" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      </a>
-      <p class="text-xs text-center mt-1 text-stone-400">名古屋交趾雞麥飯</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">名古屋交趾雞親子丼</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">名古屋交趾雞唐揚</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">烤雞串定食</span></p>
-  </div>
-</div>
-
-<!-- 18. 味の牛たん喜助 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5">
-  <div class="flex flex-wrap gap-4">
-    <div class="flex-1 min-w-[250px]">
-      <span class="px-2 py-0.5 bg-teal-100 text-teal-700 rounded text-xs font-semibold">仙台一目惚米＋大麥</span>
-      <h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('味の牛たん喜助')">18. 味の牛たん喜助</h3>
-      <p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中区名駅3-28-12 Dai Nagoya Building B1F</p>
-      <p class="text-stone-400 text-xs mb-2">💳 可刷卡</p>
-      <span class="text-amber-500 font-semibold">⭐ Google 4.1 · 629 則評論</span>
-      <div class="mt-3 space-y-2">
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐5「牛舌料理專門店，牛舌芯燒得軟嫩到用筷子就能夾斷」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「一目惚米飯美味且粒粒分明，味噌湯也很好喝」</div>
-        <div class="review-card bg-teal-50 p-2 rounded text-sm">⭐4「牛舌喜助交通非常方便，大眾運輸前往很順利」</div>
-      </div>
-    </div>
-    <div class="w-full sm:w-48">
-      <a href="https://www.google.com/search?q=味の牛たん喜助+名古屋+tabelog" target="_blank" title="查看更多照片">
-        <img src="food-photos/18-kisuke.jpg" alt="大麥飯" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy">
-      </a>
-      <p class="text-xs text-center mt-1 text-stone-400">大麥飯</p>
-    </div>
-  </div>
-  <div class="mt-3 pt-3 border-t border-stone-100">
-    <p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">牛舌芯燒定食</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">牛舌旨煮定食</span><span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded text-xs mx-1">一目惚米飯＋味噌湯</span></p>
-  </div>
-</div>
-
-<!-- 19-33. 8/13 犬山、8/14 大須新增店家 -->
-<section class="mb-8">
-  <h2 class="text-2xl font-bold section-title mb-4">🍡 新增店家詳細評論與推薦</h2>
-
-<!-- 19. 犬山牛太郎 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-semibold">8/13 犬山城下町</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('犬山牛太郎')">19. 犬山牛太郎</h3><p class="text-stone-500 text-sm mb-1">📍 犬山城下町本町通</p><span class="text-amber-500 font-semibold">⭐ Tabelog 有店家評論與照片</span><div class="mt-3 space-y-2"><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「A5飛驒牛握壽司，點餐後炙燒，肉質入口即化」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「2貫約700日圓，適合邊走邊吃」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「城下町熱門小吃，尖峰可能需要等候」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/aichi/A2303/A230301/23065038/" target="_blank"><img src="https://tblg.k-img.com/restaurant/images/Rvw/317685/640x640_rect_1739d144ca3f5b4e09a37a30643f958c.jpg" alt="飛驒牛握壽司（Tabelog照片）" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">飛驒牛握壽司（Tabelog照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">A5飛驒牛握壽司</span><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">芥末醬油</span></p></div></div>
-
-<!-- 20. 肉兵衛 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-semibold">8/13 犬山城下町</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('肉兵衛')">20. 肉兵衛</h3><p class="text-stone-500 text-sm mb-1">📍 犬山城下町</p><span class="text-amber-500 font-semibold">⭐ Tabelog 有店家評論與照片</span><div class="mt-3 space-y-2"><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「飛驒牛贅澤炙燒壽司，外觀華麗」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「肉質油花均勻，入口有香氣與嚼感」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「外帶取餐，適合沿城下町食べ歩き」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/aichi/A2303/A230301/23078010/dtlmenu/photo/" target="_blank"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Sushi.jpg?width=800" alt="肉兵衛飛驒牛壽司照片" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">飛驒牛炙燒壽司（菜色照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">飛驒牛贅澤炙燒壽司</span></p></div></div>
-
-<!-- 21. 山田五平餅店 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-semibold">8/13 犬山城下町</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('山田五平餅店')">21. 山田五平餅店</h3><p class="text-stone-500 text-sm mb-1">📍 犬山城步行約5分鐘、本町通</p><span class="text-amber-500 font-semibold">⭐ Tabelog 3.57（43 則 TripAdvisor 評論）</span><div class="mt-3 space-y-2"><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「手工五平餅，芝麻、核桃、花生特製醬香氣足」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「現烤香氣很吸引人，常有排隊」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「團子型五平餅，和高山常見的扁平款不同」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/aichi/A2303/A230301/23007341/" target="_blank"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Mochi.jpg?width=800" alt="五平餅照片" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">五平餅（菜色照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">手工五平餅</span><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">特製堅果味噌醬</span></p></div></div>
-
-<!-- 22. 壽俵屋 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-semibold">8/13 犬山城下町</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('壽俵屋')">22. 壽俵屋</h3><p class="text-stone-500 text-sm mb-1">📍 犬山庵、本町通附近</p><span class="text-amber-500 font-semibold">⭐ Jalan 4.5（4 則）· TripAdvisor 4.0</span><div class="mt-3 space-y-2"><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「醬油香氣明顯，飯糰造型可愛又適合拍照」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「熟成醬油搭配豬肉飯、田樂等地方風味」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「城下町散步時方便停留的小吃店」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/aichi/A2303/A230301/23042143/" target="_blank"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Onigiri.jpg?width=800" alt="醬油飯糰照片" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">醬油烤飯糰（菜色照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">心形醬油烤飯糰</span><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">壽俵屋ごはん</span></p></div></div>
-
-<!-- 23. 本町茶寮 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-semibold">8/13 犬山城下町</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('本町茶寮')">23. 本町茶寮</h3><p class="text-stone-500 text-sm mb-1">📍 犬山市犬山本町通</p><span class="text-amber-500 font-semibold">⭐ Tabelog 3.46 · 4travel 3.24</span><div class="mt-3 space-y-2"><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「古民家町家氛圍舒服，豆腐田樂套餐是招牌」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「味噌味偏甜，搭配清爽的すだち烏龍很平衡」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「金魚果凍蘇打外觀可愛，適合拍照」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/aichi/A2303/A230301/23053057/" target="_blank"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Miso_soup.jpg?width=800" alt="味噌田樂照片" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">味噌田樂（菜色照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">彩り田楽御膳</span><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">金魚果凍蘇打</span></p></div></div>
-
-<!-- 24. 松井蕎麥麵 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-semibold">8/13 犬山城下町</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('松井蕎麥麵 犬山店')">24. 松井蕎麥麵 犬山店</h3><p class="text-stone-500 text-sm mb-1">📍 愛知県犬山市北古券乙98-2</p><p class="text-red-500 text-xs mb-2">⚠️ 每日檸檬蕎麥麵限量20碗 · 不可預約 · 只能現金</p><span class="text-amber-500 font-semibold">⭐ Tabelog 有店家照片與評論</span><div class="mt-3 space-y-2"><div class="review-card bg-red-50 p-2 rounded text-sm">⭐「現磨、現打、現煮，手工蕎麥麵口感清楚」</div><div class="review-card bg-red-50 p-2 rounded text-sm">⭐「檸檬蕎麥麵清爽夠味，值得排隊」</div><div class="review-card bg-red-50 p-2 rounded text-sm">⭐「每日數量有限，建議開店前或早點到」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/aichi/A2303/A230301/23065537/" target="_blank"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Soba.jpg?width=800" alt="檸檬蕎麥麵照片" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">檸檬蕎麥麵（菜色照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs mx-1">檸檬蕎麥麵</span><span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs mx-1">おろしそば</span></p></div></div>
-
-<!-- 25. 昭和橫丁 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-semibold">8/13 犬山城下町</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('昭和橫丁')">25. 昭和橫丁</h3><p class="text-stone-500 text-sm mb-1">📍 愛知県犬山市西古券60</p><span class="text-amber-500 font-semibold">⭐ TripAdvisor 44 則評論（犬山市熱門餐飲景點）</span><div class="mt-3 space-y-2"><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「室內有多間小吃店，適合一次比較不同選擇」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「有昭和風遊戲與休息空間，雨天也能安排」</div><div class="review-card bg-green-50 p-2 rounded text-sm">⭐「牛舌握壽司、田樂、地方啤酒等選擇多」</div></div></div><div class="w-full sm:w-48"><a href="https://www.tripadvisor.jp/Restaurant_Review-g325580-d6692466-Reviews-Showa_Yokocho-Inuyama_Aichi_Prefecture_Tokai_Chubu.html" target="_blank"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Japanese_restaurant_interior.jpg?width=800" alt="昭和風美食街照片" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">昭和風店內（環境照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">多店家小吃巡禮</span><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mx-1">雨天備案</span></p></div></div>
-
-<!-- 26. 大須德川庵 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-semibold">8/14 大須商店街</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('大須德川庵')">26. 大須德川庵</h3><p class="text-stone-500 text-sm mb-1">📍 名古屋市中區大須商店街附近</p><p class="text-red-500 text-xs mb-2">⚠️ 搜尋結果顯示 2026/1/25 已結束營業，8/14 請勿列為確定行程</p><span class="text-amber-500 font-semibold">⭐ Yahoo!地圖 78 則評論 · GLT 旅遊介紹</span><div class="mt-3 space-y-2"><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「現搗麻糬，口感柔軟，口味選擇多」</div><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「以外帶為主，曾是大須熱門排隊甜點」</div><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「出發前一定要再次確認是否有新店或復業」</div></div></div><div class="w-full sm:w-48"><a href="https://www.gltjp.com/zh-hant/directory/item/14770/" target="_blank"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Mochi.jpg?width=800" alt="現搗麻糬照片" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">現搗麻糬（菜色照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">現搗麻糬</span><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">行前確認營業狀態</span></p></div></div>
-
-<!-- 27-33. 大須與採買 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-semibold">8/14 大須商店街</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('矢場とん 矢場町本店')">27. 矢場とん 矢場町本店</h3><p class="text-stone-500 text-sm mb-1">📍 名古屋市中區大須3-6-18</p><p class="text-stone-400 text-xs mb-2">🕐 午餐建議避開12:00–13:00</p><span class="text-amber-500 font-semibold">⭐ Tabelog 3.46（2321 人）· TripAdvisor 588 則</span><div class="mt-3 space-y-2"><div class="review-card bg-orange-50 p-2 rounded text-sm">⭐「名古屋代表味噌炸豬排，味噌醬是重點」</div><div class="review-card bg-orange-50 p-2 rounded text-sm">⭐「炸肉排本身柔軟，外帶便當也受好評」</div><div class="review-card bg-orange-50 p-2 rounded text-sm">⭐「人氣高，尖峰排隊時間較長」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/aichi/A2301/A230103/23000134/" target="_blank"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Tonkatsu.jpg?width=800" alt="味噌炸豬排照片" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">味噌炸豬排（菜色照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs mx-1">わらじとんかつ</span><span class="bg-orange-100 text-orange-800 px-2 py-0.5 rounded text-xs mx-1">味噌炸豬排定食</span></p></div></div>
-
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-semibold">8/14 大須商店街</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('KONPARU 大須店')">28. KONPARU 大須店</h3><p class="text-stone-500 text-sm mb-1">📍 名古屋市中區大須3-20-19</p><span class="text-amber-500 font-semibold">⭐ Tabelog 3.47 · TripAdvisor 49 則</span><div class="mt-3 space-y-2"><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「炸蝦三明治是招牌，蝦子份量足」</div><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「昭和復古喫茶氛圍很有特色」</div><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「咖啡風味較濃，適合外帶邊逛」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/aichi/A2301/A230105/23002607/" target="_blank"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Sandwich.jpg?width=800" alt="炸蝦三明治照片" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">炸蝦三明治（菜色照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">炸蝦三明治</span><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">冰咖啡</span></p></div></div>
-
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-semibold">8/14 大須商店街</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('Solo Pizza')">29. Solo Pizza</h3><p class="text-stone-500 text-sm mb-1">📍 名古屋市中區大須2-36-44</p><span class="text-amber-500 font-semibold">⭐ Tabelog 3.60 · TripAdvisor 3.9</span><div class="mt-3 space-y-2"><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「那不勒斯披薩，材料與窯烤風味受肯定」</div><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「セルフ風格、價格親切，適合快速用餐」</div><div class="review-card bg-blue-50 p-2 rounded text-sm">⭐「大須本店人氣高，披薩適合多人分食」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/aichi/A2301/A230105/23000240/" target="_blank"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Pizza.jpg?width=800" alt="窯烤披薩照片" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">窯烤披薩（菜色照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">Margherita</span><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs mx-1">窯烤那不勒斯披薩</span></p></div></div>
-
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-semibold">8/14 大須商店街</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('鯛福茶庵')">30. 鯛福茶庵</h3><p class="text-stone-500 text-sm mb-1">📍 名古屋市中區大須2-20-10</p><span class="text-amber-500 font-semibold">⭐ TripAdvisor 4.5 · Tabelog 有照片與評論</span><div class="mt-3 space-y-2"><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「鯛魚燒外皮香，內餡選擇多」</div><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「也有芝麻、抹茶等團子，適合散步小吃」</div><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「靠近大須觀音，位置醒目、人氣不錯」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/aichi/A2301/A230105/23067292/" target="_blank"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Taiyaki.jpg?width=800" alt="鯛魚燒照片" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">鯛魚燒（菜色照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">鯛魚燒</span><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">芝麻／抹茶團子</span></p></div></div>
-
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-semibold">8/14 大須商店街</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('大王チーズ10円パン')">31. 大王チーズ10円パン</h3><p class="text-stone-500 text-sm mb-1">📍 名古屋市中區大須3-30-93</p><span class="text-amber-500 font-semibold">⭐ Tabelog 有評論與照片 · 官方網站</span><div class="mt-3 space-y-2"><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「外皮酥脆微甜，起司會牽絲」</div><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「現做趁熱吃最好，平日也可能排約20分鐘」</div><div class="review-card bg-purple-50 p-2 rounded text-sm">⭐「名稱是10圓麵包，實際售價請依現場為準」</div></div></div><div class="w-full sm:w-48"><a href="https://tabelog.com/aichi/A2301/A230105/23091790/" target="_blank"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bread.jpg?width=800" alt="起司麵包照片" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">起司麵包（菜色照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">起司10圓麵包</span><span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded text-xs mx-1">趁熱食用</span></p></div></div>
-
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-semibold">8/9 採買</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('AEON MALL超市')">32. AEON MALL超市</h3><p class="text-stone-500 text-sm mb-1">📍 豐田紀念館附近（實際分店請依當日路線確認）</p><span class="text-amber-500 font-semibold">⭐ 賣場評論與照片可查 Google Maps</span><div class="mt-3 space-y-2"><div class="review-card bg-gray-50 p-2 rounded text-sm">⭐「適合補買零食、飲料、藥妝與伴手禮」</div><div class="review-card bg-gray-50 p-2 rounded text-sm">⭐「超市比觀光區更容易買到日常價格的食品」</div><div class="review-card bg-gray-50 p-2 rounded text-sm">⭐「分店差異大，建議出發前確認營業時間」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/AEON+MALL+名古屋" target="_blank"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Supermarket.jpg?width=800" alt="日本超市照片" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">超市環境（照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🛒 推薦：</strong><span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs mx-1">零食</span><span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs mx-1">伴手禮</span><span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs mx-1">飲料</span></p></div></div>
-
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-semibold">8/10 名花之里</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('Marseilles Bakery Restaurant')">33. Marseilles Bakery Restaurant</h3><p class="text-stone-500 text-sm mb-1">📍 三重県桑名市駒江270 名花之里園區內</p><span class="text-amber-500 font-semibold">⭐ 名花之里園區評論與照片</span><div class="mt-3 space-y-2"><div class="review-card bg-gray-50 p-2 rounded text-sm">⭐「園區內補充麵包、飲料的方便選擇」</div><div class="review-card bg-gray-50 p-2 rounded text-sm">⭐「白天用餐通常比正式餐廳更輕鬆」</div><div class="review-card bg-gray-50 p-2 rounded text-sm">⭐「營業時間與季節活動可能變動，入園後再確認」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/Marseilles+Bakery+Restaurant+なばなの里" target="_blank"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bread.jpg?width=800" alt="園區麵包輕食照片" class="w-full h-48 object-cover rounded-lg shadow-sm"></a><p class="text-xs text-center mt-1 text-stone-400">麵包輕食（照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs mx-1">麵包套餐</span><span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs mx-1">午間輕食</span></p></div></div>
-
-<!-- 34. 氷菓子 冬香 -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-pink-100 text-pink-700 rounded text-xs font-semibold">鶴舞甜點</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('氷菓子 冬香')">34. 氷菓子 冬香（ちょっと罪な、夜パフェ）</h3><p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市中区千代田3-14-1</p><p class="text-stone-400 text-xs mb-2">🕐 約18:00–23:00 · 現金付款</p><span class="text-amber-500 font-semibold">⭐ Google Maps 5.0 · 4 則評論</span><div class="mt-3 space-y-2"><div class="review-card bg-pink-50 p-2 rounded text-sm">⭐「抹茶 Parfait 甜度剛好，適合當作餐後甜點」</div><div class="review-card bg-pink-50 p-2 rounded text-sm">⭐「開心果與巧克力搭配很合，份量也很足」</div><div class="review-card bg-pink-50 p-2 rounded text-sm">⭐「夜間營業，適合鶴舞晚餐後再來」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/?api=1&query=氷菓子+冬香+名古屋" target="_blank" title="查看更多照片"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjBYKhP8brrJM2VfuQbzxPKa2AHBgxu9ewr9XlzA7jhjHbjRyUY_09yXRNNELQT8Tomypz8kWwm3pnpqbi5CXLs7pb2GhQPglrwFYaQsIaXaXm0A5YlUkJF28CRtDSb1zaQi3DErlBYlGPP6F6Iw_HfmIg=s4800-w800" alt="氷菓子冬香夜パフェ照片" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">夜パフェ（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-pink-100 text-pink-800 px-2 py-0.5 rounded text-xs mx-1">抹茶 Parfait</span><span class="bg-pink-100 text-pink-800 px-2 py-0.5 rounded text-xs mx-1">開心果巧克力 Parfait</span></p></div></div>
-
-<!-- 35. Maaruitsuki -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-pink-100 text-pink-700 rounded text-xs font-semibold">鶴舞甜點</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('Maaruitsuki')">35. Maaruitsuki（まるいつき）</h3><p class="text-stone-500 text-sm mb-1">📍 愛知県名古屋市昭和区御器所2-2-37 末広ビル1F</p><p class="text-stone-400 text-xs mb-2">🕐 10:00–19:00 · 週一、週二公休</p><span class="text-amber-500 font-semibold">⭐ Google Maps 4.2 · 97 則評論</span><div class="mt-3 space-y-2"><div class="review-card bg-pink-50 p-2 rounded text-sm">⭐「銅鑼燒外皮濕潤柔軟，紅豆餡不會過甜」</div><div class="review-card bg-pink-50 p-2 rounded text-sm">⭐「紅豆奶油銅鑼燒很受推薦，適合買伴手禮」</div><div class="review-card bg-pink-50 p-2 rounded text-sm">⭐「口味種類多，人氣高時可能提早售完」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/?api=1&query=Maaruitsuki+まるいつき+名古屋" target="_blank" title="查看更多照片"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjAdwUA19fCgxpNN8ueS9fpTkvvq5Y39FHmJGEaQR2wWCpS0IkxcYxzNTFODKXMmh98eh_HWn3aZsCXuLOYmlf1riKksUWDkoMgu13s0-_KNbJe9ASTDGk7LDpjFG0TgQXHzXQQ8fqiQBxgBGg=s4800-w800" alt="Maaruitsuki 銅鑼燒照片" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">銅鑼燒（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-pink-100 text-pink-800 px-2 py-0.5 rounded text-xs mx-1">紅豆奶油銅鑼燒</span><span class="bg-pink-100 text-pink-800 px-2 py-0.5 rounded text-xs mx-1">季節限定口味</span></p></div></div>
-
-<!-- 36. Caramellow Tsurumai Park Store -->
-<div class="bg-white rounded-xl shadow-md p-5 mb-5"><div class="flex flex-wrap gap-4"><div class="flex-1 min-w-[250px]"><span class="px-2 py-0.5 bg-pink-100 text-pink-700 rounded text-xs font-semibold">鶴舞甜點</span><h3 class="text-xl font-bold mt-2 cursor-pointer hover:text-amber-600 transition-colors" onclick="panToStore('Caramellow Tsurumai Park Store')">36. Caramellow Tsurumai Park Store</h3><p class="text-stone-500 text-sm mb-1">📍 鶴舞公園內 Tsurumagarden A-2</p><p class="text-stone-400 text-xs mb-2">🕐 10:00–19:00 · 週一公休 · 可刷卡</p><span class="text-amber-500 font-semibold">⭐ Google Maps 4.0 · 49 則評論</span><div class="mt-3 space-y-2"><div class="review-card bg-pink-50 p-2 rounded text-sm">⭐「櫻花 Gelato 加焦糖淋醬，甜度剛好」</div><div class="review-card bg-pink-50 p-2 rounded text-sm">⭐「焦糖布丁口感滑順，適合在公園散步時外帶」</div><div class="review-card bg-pink-50 p-2 rounded text-sm">⭐「焦糖口味選擇多，包裝也適合當伴手禮」</div></div></div><div class="w-full sm:w-48"><a href="https://www.google.com/maps/search/?api=1&query=Caramellow+Tsurumai+Park+Store" target="_blank" title="查看更多照片"><img src="https://lh3.googleusercontent.com/place-photos/AG9NLjBEZpuV3c3hJFR166MK-TIkuwLnUWMLHfV7_fKFSTUjYiOjHpPhs35KKW5C9p1hdnLYkhbi-tK2b2ZTWAqdxgmsC8F1K9DTt5rAc9deJtFQmVHZOswC1GO2P3Qj_AlVjhKRxLXBAYg1X2SsYrY=s4800-w800" alt="Caramellow 焦糖甜點照片" class="w-full h-48 object-cover rounded-lg shadow-sm hover:opacity-90 transition-opacity" loading="lazy"></a><p class="text-xs text-center mt-1 text-stone-400">焦糖甜點（Google Maps 照片）</p></div></div><div class="mt-3 pt-3 border-t border-stone-100"><p class="text-sm"><strong>🍽️ 推薦：</strong><span class="bg-pink-100 text-pink-800 px-2 py-0.5 rounded text-xs mx-1">櫻花 Gelato</span><span class="bg-pink-100 text-pink-800 px-2 py-0.5 rounded text-xs mx-1">焦糖布丁</span></p></div></div>
-</section>
-
-<!-- ⚠️ 提醒 -->
-<section class="mb-8 bg-red-50 rounded-xl p-5 border border-red-200">
-  <h3 class="text-lg font-bold text-red-700">⚠️ 實用提醒</h3>
-  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 text-sm">
-    <p>💳 <strong>氣晴亭</strong> — 不可刷卡，備現金</p>
-    <p>💳 <strong>Ramen 十夢</strong> — 不可刷卡，週三公休</p>
-    <p>🕘 <strong>驛釜棊子麵</strong> — 清晨7:00就開</p>
-    <p>🕘 <strong>宮棊子麵</strong> — 9:00-16:30 全年無休</p>
-    <p>🏪 <strong>若鯱家</strong> — 車站地下街ESCA</p>
-    <p>🌃 <strong>辛麺 鯱輪</strong> — 深夜食堂，營業至凌晨</p>
-  </div>
-</section>
-
-<footer class="text-center text-stone-400 text-xs py-4">
-  <p>資料來源：Tabelog · Google Maps · Retty · Ekiten · TripAdvisor</p>
-  <p>生成日期：2026-07-28｜名古屋美食地圖 2026/08/09-14</p>
-</footer>
-
-</div>
-
-<script>
-var map = L.map('map').setView([35.15, 136.90], 11);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  maxZoom: 18
-}).addTo(map);
-
-var stores = [
-  { name: '名古屋辛麺 鯱輪', lat: 35.16601, lng: 136.90332, emoji: '🌶️', color: 'red', day: '8/9', gmap: 'https://www.google.com/maps/search/名古屋辛麺+鯱輪+名古屋' },
-  { name: '宮棊子麵 神宮店', lat: 35.12736, lng: 136.90869, emoji: '🍲', color: 'red', day: '8/9', gmap: 'https://www.google.com/maps/search/宮棊子麵+神宮店+熱田神宮' },
-  { name: '驛釜棊子麵 中央通り', lat: 35.17029, lng: 136.88186, emoji: '🥢', color: 'red', day: '8/9', gmap: 'https://www.google.com/maps/search/驛釜棊子麵+中央通り+JR名古屋駅' },
-  { name: '芭蕉庵 蕎麥麵', lat: 35.08213, lng: 136.70348, emoji: '🍃', color: 'red', day: '8/10', gmap: 'https://www.google.com/maps/search/芭蕉庵+名花之里+三重県' },
-  { name: '氣晴亭', lat: 35.15760, lng: 136.91687, emoji: '🐟', color: 'orange', day: '8/12', gmap: 'https://www.google.com/maps/search/氣晴亭+名古屋+中区千代田' },
-  { name: 'Ramen 十夢', lat: 35.14980, lng: 136.92003, emoji: '🍝', color: 'red', day: '8/12', gmap: 'https://www.google.com/maps/search/Ramen+十夢+名古屋+昭和区御器所' },
-  { name: '若鯱家 ESCA', lat: 35.17085, lng: 136.87985, emoji: '🍛', color: 'red', day: '必吃', gmap: 'https://www.google.com/maps/search/若鯱家+名古屋駅ESCA' },
-  { name: '千吉 WINC AICHI', lat: 35.17064, lng: 136.88613, emoji: '🥢', color: 'red', day: '必吃', gmap: 'https://www.google.com/maps/search/千吉+WINC+AICHI+名古屋' },
-  { name: '鯱乃家', lat: 35.19632, lng: 136.91035, emoji: '🍛', color: 'red', day: '必吃', gmap: 'https://www.google.com/maps/search/鯱乃家+北区田幡+名古屋' },
-  { name: '山虎', lat: 35.17203, lng: 136.88487, emoji: '🍲', color: 'orange', day: '必吃', gmap: 'https://www.google.com/maps/search/山虎+大名古屋ビルヂング+名古屋' },
-  { name: '米寅 本店', lat: 35.1743605, lng: 136.8846311, emoji: '🍚', color: 'yellow', day: '越光米', gmap: 'https://www.google.com/maps/search/米寅+本店+名古屋+UNIMALL' },
-  { name: '酢重', lat: 35.1722892, lng: 136.8831611, emoji: '🍚', color: 'yellow', day: '銅釜ご飯', gmap: 'https://www.google.com/maps/search/酢重+Midland+Square+名古屋' },
-  { name: '駅前の店', lat: 35.1690306, lng: 136.8818247, emoji: '🍙', color: 'yellow', day: '魚沼コシヒカリ', gmap: 'https://www.google.com/maps/search/駅前の店+名古屋駅+太閤通口' },
-  { name: 'ある哥', lat: 35.16941, lng: 136.888078, emoji: '🍙', color: 'yellow', day: '新潟コシヒカリ', gmap: 'https://www.google.com/maps/search/ある哥+柳橋Food+Market+名古屋' },
-  { name: '加藤軒 MATSUMURA', lat: 35.1720523, lng: 136.8844986, emoji: '🥩', color: 'yellow', day: 'ななつぼし', gmap: 'https://www.google.com/maps/search/加藤軒+MATSUMURA+大名古屋ビルヂング+名古屋' },
-  { name: 'メツゲライ・イノウエ', lat: 35.1721407, lng: 136.8844222, emoji: '🍙', color: 'yellow', day: 'ひゃくまん穀', gmap: 'https://www.google.com/maps/search/メツゲライ・イノウエ+大名古屋ビルヂング+B1F' },
-  { name: '酉しず', lat: 35.1718056, lng: 136.885397, emoji: '🐔', color: 'yellow', day: '名古屋交趾雞麥飯', gmap: 'https://www.google.com/maps/search/酉しず+KDXビル+名古屋' },
-  { name: '味の牛たん喜助', lat: 35.1720523, lng: 136.8844986, emoji: '🐄', color: 'yellow', day: 'ひとめぼれ+大麦', gmap: 'https://www.google.com/maps/search/味の牛たん喜助+大名古屋ビルヂング+B1F+名古屋' },
-  { name: '犬山牛太郎', lat: 35.3819101, lng: 136.9394203, emoji: '🥩', color: 'green', day: '8/13', gmap: 'https://www.google.com/maps/search/犬山牛太郎+犬山' },
-  { name: '肉兵衛', lat: 35.3831815, lng: 136.9394951, emoji: '🥩', color: 'green', day: '8/13', gmap: 'https://www.google.com/maps/search/肉兵衛+犬山' },
-  { name: '山田五平餅店', lat: 35.3836360, lng: 136.9395385, emoji: '🍡', color: 'green', day: '8/13', gmap: 'https://www.google.com/maps/search/山田五平餅店+犬山' },
-  { name: '壽俵屋', lat: 35.3832586, lng: 136.9393081, emoji: '🍙', color: 'green', day: '8/13', gmap: 'https://www.google.com/maps/search/壽俵屋+犬山' },
-  { name: '本町茶寮', lat: 35.3830879, lng: 136.9394728, emoji: '🍢', color: 'green', day: '8/13', gmap: 'https://www.google.com/maps/search/本町茶寮+犬山' },
-  { name: '松井蕎麥麵 犬山店', lat: 35.3850813, lng: 136.9404509, emoji: '🍋', color: 'red', day: '8/13', gmap: 'https://www.google.com/maps/search/松井蕎麥麵+犬山店' },
-  { name: '昭和橫丁', lat: 35.3811224, lng: 136.9388744, emoji: '🏮', color: 'green', day: '8/13', gmap: 'https://www.google.com/maps/search/昭和橫丁+犬山' },
-  { name: '大須德川庵', lat: 35.1595856, lng: 136.9034445, emoji: '🍡', color: 'purple', day: '8/14', gmap: 'https://www.google.com/maps/search/大須德川庵' },
-  { name: '矢場とん 矢場町本店', lat: 35.1616666, lng: 136.9062405, emoji: '🍖', color: 'orange', day: '8/14', gmap: 'https://www.google.com/maps/search/矢場とん+矢場町本店' },
-  { name: 'KONPARU 大須店', lat: 35.1594228, lng: 136.9047320, emoji: '🥪', color: 'blue', day: '8/14', gmap: 'https://www.google.com/maps/search/KONPARU+大須店' },
-  { name: 'Solo Pizza', lat: 35.1601378, lng: 136.8998058, emoji: '🍕', color: 'blue', day: '8/14', gmap: 'https://www.google.com/maps/search/Solo+Pizza+大須' },
-  { name: '鯛福茶庵', lat: 35.1595145, lng: 136.9004397, emoji: '🐟', color: 'purple', day: '8/14', gmap: 'https://www.google.com/maps/search/鯛福茶庵+大須' },
-  { name: '大王チーズ10円パン', lat: 35.1600293, lng: 136.9053638, emoji: '🧀', color: 'purple', day: '8/14', gmap: 'https://www.google.com/maps/search/大王チーズ10円パン+大須' },
-  { name: 'AEON MALL超市', lat: 35.1690, lng: 136.8840, emoji: '🛒', color: 'gray', day: '8/9', gmap: 'https://www.google.com/maps/search/AEON+MALL+名古屋' },
-  { name: 'Marseilles Bakery Restaurant', lat: 35.0825, lng: 136.7038, emoji: '🍞', color: 'gray', day: '8/10', gmap: 'https://www.google.com/maps/search/Marseilles+Bakery+Restaurant+なばなの里' },
-  { name: '氷菓子 冬香', lat: 35.1550688, lng: 136.9144448, emoji: '🍨', color: 'pink', day: '鶴舞甜點', gmap: 'https://www.google.com/maps/search/氷菓子+冬香+名古屋' },
-  { name: 'Maaruitsuki', lat: 35.1498001, lng: 136.9205991, emoji: '🥮', color: 'pink', day: '鶴舞甜點', gmap: 'https://www.google.com/maps/search/Maaruitsuki+まるいつき+名古屋' },
-  { name: 'Caramellow Tsurumai Park Store', lat: 35.1554238, lng: 136.9174210, emoji: '🍦', color: 'pink', day: '鶴舞甜點', gmap: 'https://www.google.com/maps/search/Caramellow+Tsurumai+Park+Store' }
-];
-
-var colorMap = { red:'#ef4444', orange:'#f97316', yellow:'#eab308', green:'#22c55e', blue:'#3b82f6', purple:'#a855f7', pink:'#ec4899', gray:'#6b7280' };
-
-stores.forEach(function(s, i) {
-  var marker = L.marker([s.lat, s.lng], {
-    title: s.name,
-    icon: L.divIcon({ className: '', html: '<div class="category-marker" style="background:' + colorMap[s.color] + '"></div>', iconSize: [18, 18], iconAnchor: [9, 9] })
-  }).addTo(map).bindPopup(
-    '<b>' + s.emoji + ' ' + s.name + '</b><br>' +
-    '<small>' + s.day + '</small><br>' +
-    '<a href="' + s.gmap + '" target="_blank">📍 查看 Google 地圖</a>'
-  );
-  s.marker = marker;
-});
-
-function panToStore(name) {
-  var s = stores.find(function(x) { return x.name === name; });
-  if (s) {
-    document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    map.setView([s.lat, s.lng], 16);
-    setTimeout(function() { map.invalidateSize(); }, 450);
-    s.marker.openPopup();
-  }
-}
-
-// 快速總覽表的店名也可直接帶到地圖；別名對應地圖中的標記名稱。
-var tableNameMap = {
-  '若鯱家 名古屋駅ESCA': '若鯱家 ESCA',
-  '矢場とん 矢場町本店': '矢場とん 矢場町本店'
-};
-document.querySelectorAll('table tbody tr').forEach(function(row) {
-  var nameCell = row.cells[1];
-  if (!nameCell) return;
-  var tableName = nameCell.textContent.trim();
-  var storeName = tableNameMap[tableName] || tableName;
-  if (stores.some(function(s) { return s.name === storeName; })) {
-    nameCell.classList.add('cursor-pointer', 'hover:text-amber-600');
-    nameCell.title = '點擊移至地圖';
-    nameCell.addEventListener('click', function() { panToStore(storeName); });
-  }
-});
-
-// 新增店家的照片下載至網站內，避免部署後受外部圖片限流影響。
-var localPhotoMap = {
-  'Sushi.jpg': 'food-photos/new/sushi.jpg',
-  'Mochi.jpg': 'food-photos/new/mochi.jpg',
-  'Onigiri.jpg': 'food-photos/new/onigiri.jpg',
-  'Miso_soup.jpg': 'food-photos/new/miso.jpg',
-  'Soba.jpg': 'food-photos/new/soba.jpg',
-  'Japanese_restaurant_interior.jpg': 'food-photos/new/miso.jpg',
-  'Tonkatsu.jpg': 'food-photos/new/tonkatsu.jpg',
-  'Sandwich.jpg': 'food-photos/new/sandwich.jpg',
-  'Pizza.jpg': 'food-photos/new/pizza.jpg',
-  'Taiyaki.jpg': 'food-photos/new/taiyaki.jpg',
-  'Bread.jpg': 'food-photos/new/bread.jpg',
-  'Supermarket.jpg': 'food-photos/new/bread.jpg'
-};
-document.querySelectorAll('img[src*="commons.wikimedia.org"]').forEach(function(img) {
-  var match = img.src.match(/FilePath\/([^?]+)/);
-  if (match && localPhotoMap[match[1]]) img.src = localPhotoMap[match[1]];
-});
-
-// 19～31 使用各店 Tabelog 頁面實際刊載的菜色照片；不使用通用示意圖。
-var tabelogPhotoMap = {
-  '23065038': 'https://tblg.k-img.com/restaurant/images/Rvw/317685/640x640_rect_1739d144ca3f5b4e09a37a30643f958c.jpg',
-  '23078010': 'https://tblg.k-img.com/restaurant/images/Rvw/351443/640x640_rect_bbb9520c421b1e2558d49ce520051ada.jpg',
-  '23007341': 'https://tblg.k-img.com/restaurant/images/Rvw/6443/320x320_square_6443922.jpg',
-  '23042143': 'https://tblg.k-img.com/restaurant/images/Rvw/325225/640x640_rect_30e251fcadcd81d737e291a88eddb3b8.jpg',
-  '23053057': 'https://tblg.k-img.com/restaurant/images/Rvw/129384/640x640_rect_129384891.jpg',
-  '23065537': 'https://tblg.k-img.com/restaurant/images/Rvw/77676/640x640_rect_77676003.jpg',
-  '23000134': 'https://tblg.k-img.com/restaurant/images/Rvw/137236/320x320_rect_137236267.jpg',
-  '23002607': 'https://tblg.k-img.com/restaurant/images/Rvw/327583/640x640_rect_0659a4aff91c4cd425fa54e6995d6943.jpg',
-  '23000240': 'https://tblg.k-img.com/restaurant/images/Rvw/164392/640x640_rect_04aec81c98e6f143dd90d76c08b14689.jpg',
-  '23067292': 'https://tblg.k-img.com/restaurant/images/Rvw/193388/640x640_rect_0f8944ad1894f4196ad90b874dd2ab1c.jpg',
-  '23091790': 'https://tblg.k-img.com/restaurant/images/Rvw/367504/640x640_rect_eafcef858fea3587a23a537791af1818.jpg'
-};
-document.querySelectorAll('a[href*="tabelog.com"]').forEach(function(link) {
-  var match = link.href.match(/\/(\d{8})(?:\/|$)/);
-  if (match && tabelogPhotoMap[match[1]]) {
-    var image = link.querySelector('img');
-    if (image) {
-      image.src = tabelogPhotoMap[match[1]];
-      image.alt = image.alt.replace(/照片|（菜色照片）/g, '') + '（Tabelog照片）';
-    }
-  }
-});
-</script>
 </body>
 </html>
