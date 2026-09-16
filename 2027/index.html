@@ -5,85 +5,300 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>九州 10天9夜親子自由行計畫 (2027/1/21 - 1/30)</title>
     <style>
+        :root {
+            --primary: #2980b9;
+            --primary-dark: #1e3a8a;
+            --primary-light: #3498db;
+            --accent: #e67e22;
+            --highlight: #c0392b;
+            --bg: #f9f9f9;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+        }
         body {
-            font-family: 'Helvetica Neue', Arial, 'LiHei Pro', '微軟正黑體', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 900px;
+            font-family: 'Helvetica Neue', Arial, 'LiHei Pro', '微軟正黑體', -apple-system, sans-serif;
+            line-height: 1.65;
+            color: var(--text-main);
+            max-width: 960px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #f9f9f9;
+            padding: 24px 20px 60px;
+            background-color: var(--bg);
         }
         h1 {
             text-align: center;
             color: #2c3e50;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 12px;
+            margin-bottom: 8px;
+            font-size: 1.85rem;
         }
         h2 {
-            color: #2980b9;
-            margin-top: 30px;
+            color: var(--primary);
+            margin-top: 36px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.4rem;
         }
         h3 {
-            color: #e67e22;
+            color: var(--accent);
+            margin-top: 0;
+            margin-bottom: 10px;
         }
+        p { margin-bottom: 12px; }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 24px;
+            font-size: 1.05rem;
+        }
+        .home-link {
+            display: inline-block;
+            margin-bottom: 14px;
+            font-size: .9rem;
+            color: var(--primary);
+            text-decoration: none;
+            background: #eaf4fb;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .home-link:hover {
+            background: #d6eaf8;
+            transform: translateY(-1px);
+        }
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 16px 0 24px;
+            flex-wrap: wrap;
+        }
+        .nav-btn {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .nav-btn:hover {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        /* 表格樣式 */
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
-            background-color: #fff;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background-color: var(--card-bg);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+            border-radius: 8px;
+            overflow: hidden;
+            font-size: 0.95rem;
         }
         th, td {
-            padding: 12px 15px;
-            border: 1px solid #ddd;
+            padding: 12px 14px;
+            border: 1px solid #e5e7eb;
             text-align: left;
         }
         th {
-            background-color: #3498db;
+            background-color: var(--primary-light);
             color: white;
             white-space: nowrap;
+            font-weight: 600;
         }
         tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background-color: #f8fafc;
         }
         .highlight {
-            color: #c0392b;
+            color: var(--highlight);
             font-weight: bold;
         }
+
+        /* 方塊與卡片 */
         .note-box {
             background-color: #fff3cd;
             border-left: 5px solid #ffc107;
-            padding: 15px;
+            padding: 15px 18px;
             margin: 20px 0;
             border-radius: 4px;
         }
         .luggage-box {
             background-color: #e8f4f8;
-            border-left: 5px solid #3498db;
-            padding: 15px;
+            border-left: 5px solid var(--primary-light);
+            padding: 18px 20px;
             margin: 20px 0;
-            border-radius: 4px;
+            border-radius: 6px;
         }
         .day-card {
-            background-color: #fff;
-            padding: 20px;
+            background-color: var(--card-bg);
+            padding: 22px;
             margin-bottom: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-left: 5px solid #2980b9;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary);
         }
-        .home-link {
+        .day-card ul {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+        .day-card li {
+            margin-bottom: 6px;
+        }
+
+        /* 深度落地章節專用樣式 */
+        .section-deep-dive {
+            margin-top: 48px;
+            border-top: 3px dashed #cbd5e1;
+            padding-top: 32px;
+        }
+        .deep-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .deep-card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        .tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+        .tag-blue { background: #dbeafe; color: #1d4ed8; }
+        .tag-green { background: #d1fae5; color: #047857; }
+        .tag-amber { background: #fef3c7; color: #b45309; }
+        .tag-red { background: #fee2e2; color: #b91c1c; }
+
+        .timeline {
+            position: relative;
+            padding-left: 26px;
+            margin-top: 14px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 6px;
+            bottom: 6px;
+            width: 3px;
+            background: #cbd5e1;
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 18px;
+        }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .timeline-dot {
+            position: absolute;
+            left: -26px;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        .timeline-time {
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: 0.95rem;
+        }
+        .timeline-content {
+            font-size: 0.92rem;
+            margin-top: 4px;
+            color: #334155;
+        }
+        .timeline-content ul {
+            padding-left: 20px;
+            margin: 4px 0;
+        }
+        .timeline-content li {
+            margin-bottom: 4px;
+        }
+
+        .highlight-box {
+            background: #f0fdf4;
+            border-left: 4px solid var(--success);
+            padding: 12px 16px;
+            border-radius: 0 6px 6px 0;
+            margin: 12px 0;
+            font-size: 0.92rem;
+        }
+        .warn-box {
+            background: #fffbeb;
+            border-left: 4px solid var(--accent);
+            padding: 12px 16px;
+            border-radius: 0 6px 6px 0;
+            margin: 12px 0;
+            font-size: 0.92rem;
+        }
+        .danger-box {
+            background: #fef2f2;
+            border-left: 4px solid var(--highlight);
+            padding: 12px 16px;
+            border-radius: 0 6px 6px 0;
+            margin: 12px 0;
+            font-size: 0.92rem;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .mini-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .mini-card h4 {
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        .mini-card ul {
+            padding-left: 18px;
+            margin: 4px 0;
+        }
+        .mini-card li {
+            margin-bottom: 4px;
+        }
+        .back-to-top {
             display: inline-block;
-            margin-bottom: 10px;
-            font-size: .9rem;
-            color: #2980b9;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--primary);
             text-decoration: none;
-            background: #eaf4fb;
-            padding: 6px 14px;
-            border-radius: 999px;
         }
-        .home-link:hover { background: #d6eaf8; }
+        .back-to-top:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -92,7 +307,15 @@
 
     <h1>❄️ 九州 10天9夜親子自由行計畫 (2027/1/21 - 1/30)</h1>
 
-    <p style="text-align: center;">為 11 歲與 13 歲孩子量身打造的專屬旅行：滑雪、科技體驗、豪斯登堡與在地文化</p>
+    <p class="subtitle">為 11 歲與 13 歲孩子量身打造的專屬旅行：滑雪、科技體驗、豪斯登堡與在地文化</p>
+
+    <!-- 快速導覽列 -->
+    <div class="nav-tabs">
+        <a class="nav-btn" href="#overview">📅 行程計畫總覽</a>
+        <a class="nav-btn" href="#luggage">🧳 大行李轉移方案</a>
+        <a class="nav-btn" href="#daily">📝 每日精簡計畫</a>
+        <a class="nav-btn" href="#deep-dive" style="background:#eaf4fb; border-color:#3498db; color:#1e3a8a;">🔍 1/25-1/28 極致落地手冊 (NEW)</a>
+    </div>
 
     <h2 id="overview">行程計畫總覽</h2>
     <table>
@@ -145,7 +368,7 @@
                 <td>1/27 (三)</td>
                 <td><span class="highlight">特急直達豪斯登堡 (處理大行李)</span></td>
                 <td>07:30 處理行李</td>
-                <td>豪斯登堡 (鹿特丹飯店 - 待訂)</td>
+                <td>豪斯登堡 (鹿特丹飯店 - 已訂)</td>
             </tr>
             <tr>
                 <td>1/28 (四)</td>
@@ -172,12 +395,12 @@
         <h3>🧳 1/27 豪斯登堡跨夜「大行李轉移」應對方案</h3>
         <p>因前 6 晚入住的公寓式酒店無前台可跨夜寄放行李，1/27 早上前往豪斯登堡時，請執行以下任一方案（僅攜帶 2 天 1 夜輕便行李去樂園）：</p>
         <ul>
-            <li><strong>方案 A（車站置物櫃，最順路）：</strong> 1/27 早上 08:00 拖著大行李前往博多車站，將行李鎖在車站內的大型投幣式置物櫃（跨夜約 1600-2000 日圓）。鎖好後直接進站搭 08:36 的特急前往豪斯登堡。1/28 傍晚回到博多站時再順手取出。</li>
+            <li><strong>方案 A（車站置物櫃，最順路）：</strong> 1/27 早上 07:45 拖著大行李前往博多車站，將行李鎖在車站內的大型投幣式置物櫃（跨夜約 1600-2000 日圓）。鎖好後直接進站搭 08:36 的特急前往豪斯登堡。1/28 傍晚回到博多站時再順手取出。</li>
             <li><strong>方案 B（新飯店寄放，免費）：</strong> 若 1/28-1/30 最後兩晚預訂的是「有 24 小時實體前台的正規飯店」，1/27 早上提前將大行李拿去這間「明天才要入住」的新飯店寄放。1/28 晚上從豪斯登堡回來時，行李可能已貼心地在房間內等候。</li>
         </ul>
     </div>
 
-    <h2 id="daily">詳細每日計畫</h2>
+    <h2 id="daily">詳細每日計畫 (精簡版)</h2>
 
     <div class="day-card">
         <h3>Day 1：1/21 (四) - 啟程前往九州</h3>
@@ -230,46 +453,47 @@
     </div>
 
     <div class="day-card">
-        <h3>Day 5：1/25 (一) - 銀白世界滑雪體驗 (平日避開人潮)</h3>
+        <h3>Day 5：1/25 (一) - 銀白世界滑雪體驗 (平日避開人潮) <a href="#deep-day5" style="font-size:0.85rem; font-weight:normal; color:#2980b9;">[查看完整交通與玩法手冊 ↓]</a></h3>
         <ul>
-            <li><strong>出發時間：</strong>07:30～08:00 (依預約的巴士時間為準)</li>
-            <li><strong>行程：</strong>搭乘事先預約的滑雪一日遊專車，前往「九重森林公園滑雪場」。抵達後租借雪衣、雪具或雪盆。</li>
-            <li><strong>傍晚：</strong>約 19:30 返回博多，可安排一頓熱騰騰的燒肉慰勞體力消耗。</li>
+            <li><strong>出發時間：</strong>07:30 專車發車（07:15 集合）</li>
+            <li><strong>行程：</strong>搭乘事先預約的滑雪一日遊專車，直達「九重森林公園滑雪場」。暢玩專屬兒童與新手的「なかよし広場」（配備電動步道、飆速雪橇）。</li>
+            <li><strong>傍晚：</strong>約 19:15 返回博多筑紫口，安排黑毛和牛燒肉或熱騰騰牛腸鍋慰勞體力消耗。</li>
         </ul>
     </div>
 
     <div class="day-card">
-        <h3>Day 6：1/26 (二) - 歷史文化與表參道散策 (晚間行李備戰)</h3>
+        <h3>Day 6：1/26 (二) - 歷史文化與表參道散策 (晚間行李備戰) <a href="#deep-day6" style="font-size:0.85rem; font-weight:normal; color:#2980b9;">[查看完整交通與玩法手冊 ↓]</a></h3>
         <ul>
             <li><strong>出發時間：</strong>10:00</li>
-            <li><strong>交通：</strong>搭乘西鐵電車至太宰府站。</li>
-            <li><strong>行程：</strong>遊覽太宰府天滿宮，漫步表參道品嚐「梅枝餅」，隨後參觀九州國立博物館。</li>
-            <li><strong>晚上（重要任務）：</strong>將前半趟旅行的戰利品全數裝入大行李箱。另外準備一個 2 天 1 夜的輕便提袋或小登機箱，供明後天豪斯登堡使用。</li>
+            <li><strong>交通：</strong>博多巴士總站搭乘「西鐵巴士 太宰府 Liner 旅人號」直達（約 40 分鐘）。</li>
+            <li><strong>行程：</strong>遊覽太宰府天滿宮（參拜藤本壯介設計之「令和仮殿」）、品嚐現烤梅枝餅與一蘭五角合格拉麵，隨後經彩虹隧道參觀九州國立博物館。</li>
+            <li><strong>晚上（重要任務）：</strong>執行行李分流。大行李箱全數鎖定留博多，每人僅準備 1 個 2 天 1 夜隨身後背包。</li>
         </ul>
     </div>
 
     <div class="day-card">
-        <h3>Day 7：1/27 (三) - 豪斯登堡第一天：戶外冒險與白銀世界</h3>
+        <h3>Day 7：1/27 (三) - 豪斯登堡第一天：戶外冒險與白銀世界 <a href="#deep-day7" style="font-size:0.85rem; font-weight:normal; color:#2980b9;">[查看完整交通與玩法手冊 ↓]</a></h3>
         <ul>
-            <li><strong>早上（行李行動）：</strong>07:30 退房出門，依據決定的方案（車站置物櫃 或 拿去新飯店寄放）處理大行李箱。</li>
-            <li><strong>交通：</strong>搭乘 08:36 發車的特急豪斯登堡 9 號。10:24 抵達，將隨身行李交給入園口專屬櫃檯直送飯店。</li>
-            <li><strong>行程：</strong>
+            <li><strong>早上（行李行動）：</strong>07:45 處理大行李（存入博多車站大型置物櫃 或 送至 1/28 新飯店預寄）。</li>
+            <li><strong>交通與接駁：</strong>搭乘 08:36 發車的 JR 特急「豪斯登堡 9 號」（10:22 抵達）。出站過橋至迎賓門巴士站，搭乘<strong>「鹿特丹飯店免費接駁車」（約5分鐘/每20-30分鐘一班）</strong>直達飯店。<a href="https://www.huistenbosch.co.jp/access/pdf/busguide.pdf" target="_blank" rel="noopener noreferrer" style="color:#2980b9; font-weight:bold; margin-left:6px;">[🚌 查閱官方接駁車時刻表 PDF]</a></li>
+            <li><strong>行李與入園：</strong>鹿特丹飯店無法在迎賓門託運行李，抵達飯店後先將隨身包放入飯店內<strong>免費住宿客專用置物櫃</strong>，隨即從飯店專屬的<strong>「冒險公園閘門（Adventure Park Gate）」</strong>快速購票入園。</li>
+            <li><strong>行程重點：</strong>
                 <ul>
-                    <li>白天：主攻天空之城立體迷宮、流星滑索。</li>
-                    <li>夜晚：欣賞白銀世界點燈、3D 光雕投影、搭乘光之運河遊艇。</li>
+                    <li>白天：天空之城高空繩索冒險、流星滑索、德姆特倫高塔展望台。</li>
+                    <li>夜晚：阿姆斯特丹廣場「白銀世界點燈儀式」、3D 光雕投影、光之運河遊艇。</li>
                 </ul>
             </li>
-            <li><strong>住宿：</strong>入夜後直接走回位於園區中心的「鹿特丹飯店」休息。</li>
+            <li><strong>住宿：</strong>入夜後漫步回已預訂的官方園區飯店「鹿特丹飯店」休息。</li>
         </ul>
     </div>
 
     <div class="day-card">
-        <h3>Day 8：1/28 (四) - 豪斯登堡第二天：科技沉浸與重返福岡</h3>
+        <h3>Day 8：1/28 (四) - 豪斯登堡第二天：科技沉浸與重返福岡 <a href="#deep-day8" style="font-size:0.85rem; font-weight:normal; color:#2980b9;">[查看完整交通與玩法手冊 ↓]</a></h3>
         <ul>
-            <li><strong>出發時間：</strong>10:00 (園區內飯店退房，行李交由飯店送至入園口)</li>
-            <li><strong>行程：</strong>憑前一日門票免費兌換今日入園護照。攻略高人氣 VR 設施（如 VR 激流泛舟、Mission Deep Sea）。</li>
-            <li><strong>交通：</strong>搭乘 16:45 或 17:45 的 JR 特急返回博多。</li>
-            <li><strong>晚上（取回行李）：</strong>20:00 前抵達博多。若採方案 A，請去車站置物櫃取回行李；若採方案 B，直接前往新飯店 Check-in。</li>
+            <li><strong>退房與免費門票：</strong>09:30 退房，將隨身行李寄放在飯店免費置物櫃，前台免費領取<strong>「翌日 1DAY 護照」</strong>，由冒險公園閘門再次快速入園。</li>
+            <li><strong>行程重點：</strong>攻略高人氣科技與沉浸設施（Mission Deep Sea、VR 激流泛舟、洪水來襲冒險館、米飛兔專區）。</li>
+            <li><strong>傍晚返程：</strong>15:45 從冒險公園閘門出園回到鹿特丹飯店取行李，搭乘飯店接駁車（或步行7分鐘）至迎賓門，搭乘 16:45 JR 特急「豪斯登堡 42 號」（18:35 返抵博多）。</li>
+            <li><strong>晚上：</strong>博多站取回大行李，入住博多新飯店辦理 Check-in。</li>
         </ul>
     </div>
 
@@ -289,6 +513,421 @@
             <li><strong>交通：</strong>最晚 <strong>09:30</strong> 離開飯店，搭乘地鐵前往福岡機場國際線航廈。</li>
             <li><strong>航班：</strong>星宇航空 JX843（12:10 福岡機場 ✈️ 13:50 桃園 T1）。</li>
         </ul>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- 🌟 特別章節：1/25 - 1/28 四日極致落地執行手冊 (詳細攻略) 🌟 -->
+    <!-- ================================================================= -->
+    <div class="section-deep-dive" id="deep-dive">
+        <h2>
+            <span>❄️ 深度落地手冊：1/25 - 1/28 關鍵四日實戰執行細節</span>
+        </h2>
+        <p style="color:#64748b; font-size:0.95rem; margin-bottom:20px;">本章節為針對 1/25 (雪場)、1/26 (太宰府)、1/27-1/28 (豪斯登堡) 之全方位深度規劃，包含精確交通時刻、行李交接 SOP、樂園門票特典與避坑指南。</p>
+
+        <!-- 總覽策略表格 -->
+        <div class="deep-card">
+            <div class="deep-card-title">
+                <span>📌 四日核心策略與執行時程速查</span>
+                <span class="tag tag-blue">精華架構</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>核心體驗</th>
+                        <th>推薦交通方案</th>
+                        <th>行李與住宿處理</th>
+                        <th>關鍵預約/開賣時程</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1/25 (一)</strong></td>
+                        <td>九重森林公園玩雪/雪橇</td>
+                        <td>博多筑紫口直達滑雪專車 (JET/Orion)</td>
+                        <td>續住メルベーユ博多 (輕裝出發)</td>
+                        <td>2026年10-11月開放冬季巴士預約</td>
+                    </tr>
+                    <tr>
+                        <td><strong>1/26 (二)</strong></td>
+                        <td>太宰府天滿宮(令和仮殿) + 九州國立博物館</td>
+                        <td>西鐵太宰府 Liner 旅人巴士</td>
+                        <td>晚間執行「大行李封箱+2天1夜背包」分流</td>
+                        <td>免預約，刷交通 IC 卡即可</td>
+                    </tr>
+                    <tr>
+                        <td><strong>1/27 (三)</strong></td>
+                        <td>特急直達豪斯登堡 + 白銀世界點燈</td>
+                        <td>JR 特急豪斯登堡 9 號 (08:36-10:22)</td>
+                        <td>大行李存博多置物櫃 / 小包迎賓門直送客房</td>
+                        <td>乘車日前 1 個月 10:00 (2026/12/27) JR 劃位</td>
+                    </tr>
+                    <tr>
+                        <td><strong>1/28 (四)</strong></td>
+                        <td>豪斯登堡科技/VR ➔ 返回福岡博多</td>
+                        <td>JR 特急豪斯登堡 42 號 (16:45-18:35)</td>
+                        <td>退房行李逆向送迎賓門 ➔ 回博多入住新飯店</td>
+                        <td>官方飯店享第二天免費 1DAY 護照特典</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Day 5 詳細 -->
+        <div class="deep-card" id="deep-day5">
+            <div class="deep-card-title">
+                <span>Day 5：1/25 (一) 九重森林公園滑雪場 (雪地與雪橇樂園)</span>
+                <span class="tag tag-green">高耗能體驗日</span>
+            </div>
+
+            <div class="warn-box">
+                <strong>⚠️ 交通安全守則：嚴禁雪地自駕，唯一推薦「博多直達日帰滑雪專車」</strong><br>
+                九重連山冬季常有路面結冰（黑冰）與積雪，無雪地自駕經驗極易打滑。搭乘專車由專業司機配備雪鍊直達，全家亦可在車上補眠充電。
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">06:50 - 07:15 ｜ 步行前往集合點</div>
+                    <div class="timeline-content">
+                        從メルベーユ博多步行至博多車站筑紫口集合點（通常為 LAWSON 便利商店旁或指定巴士月台）。在超商備妥熱飲、暖暖包與高熱量點心。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">07:30 - 10:00 ｜ 搭乘滑雪專車出發 (大分自動車道 ➔ 九重IC)</div>
+                    <div class="timeline-content">
+                        專車由博多出發，中途停靠基山 PA 休息站（停留約 15 分鐘上洗手間），約 10:00 直達九重森林公園滑雪場大門。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">10:00 - 10:45 ｜ 入場手續與裝備租借</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li><strong>兒童與新手雪地樂園入場券（なかよし広場）：</strong>每人約 1,500 日圓（含雪地電梯/電動步道，不限次數搭乘）。</li>
+                            <li><strong>裝備租借：</strong>雪橇（約 800-1,000 日圓/個，租 2 個讓 11 歲與 13 歲孩子分組競速）、防水平底雪靴（約 1,000 日圓/人）。若無自備防水雪褲可現場租借雪服。</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">10:45 - 12:30 ｜ なかよし広場 飆速雪橇</div>
+                    <div class="timeline-content">
+                        專用雪道與一般單板/雙板滑雪者完全隔開，配備頂棚電動步道（スノーエスカレーター），滑下去後站上步道即可輕鬆登頂，不耗費體力爬坡，孩子可暢玩數十趟。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">12:30 - 13:30 ｜ 滑雪中心餐廳熱食午餐</div>
+                    <div class="timeline-content">
+                        享用大分名物日式炸雞塊定食（とり天定食）、九重大份量牛丼或熱騰騰拉麵，補充熱量並喝熱飲暖身。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">13:30 - 15:30 ｜ 雪人創作大賽、打雪仗與全景打卡</div>
+                    <div class="timeline-content">
+                        週一人潮僅約假日三分之一，無排隊壓力。午後可在雪場觀景台遠眺阿蘇九重連山銀白全景。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">15:30 - 16:15 ｜ 歸還裝備、更衣保暖</div>
+                    <div class="timeline-content">
+                        更換備用乾爽襪子與上衣（避免流汗吹風受涼），16:15 前回到專車點集合。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">16:30 - 19:15 ｜ 專車返程博多 ➔ 燒肉慶功宴</div>
+                    <div class="timeline-content">
+                        專車直達博多筑紫口。晚餐推薦博多車站周邊黑毛和牛燒肉或博多牛腸鍋（もつ鍋前田屋 / 笑樂），犒賞整天玩雪的體能消耗。
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <strong>🎯 暴風雪備案 (Contingency)：</strong><br>
+                若 1/25 遇強烈暴風雪導致山區專車停駛或雪場關閉，立即啟動備案：前往 <strong>福岡海之中道海洋世界（水族館）+ 志賀島</strong>，或 <strong>LaLaport 購物中心（1:1 實物大 Nu 鋼彈展演 + VS PARK 室內運動育樂館）</strong>。
+            </div>
+            <a class="back-to-top" href="#overview">↑ 回到行程總覽</a>
+        </div>
+
+        <!-- Day 6 詳細 -->
+        <div class="deep-card" id="deep-day6">
+            <div class="deep-card-title">
+                <span>Day 6：1/26 (二) 太宰府天滿宮 ＋ 九州國立博物館</span>
+                <span class="tag tag-blue">文化蓄能 ＆ 行李轉移準備日</span>
+            </div>
+
+            <div class="highlight-box">
+                <strong>✨ 體能調節亮點：</strong>昨天剛玩完雪，今天設定為 10:00 悠閒出門的低強度節奏，讓青少年睡飽充電。今晚最重要的隱藏任務是「行李大分流」。
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">10:00 - 10:45 ｜ 前往太宰府 (推薦直達巴士)</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li><strong>首選路線（直達巴士）：</strong>博多巴士總站 1 樓 11 號乘車處，搭乘「西鐵巴士 太宰府 Liner 旅人號」（約 40 分鐘直達太宰府站前，單程 610 日圓，刷交通 IC 卡）。</li>
+                            <li><strong>備選路線（鐵道觀光）：</strong>地鐵博多 ➔ 天神 ➔ 西鐵天神大牟田線特急至二日市 ➔ 轉乘太宰府線（約 45 分鐘）。</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">10:45 - 12:30 ｜ 表參道美食巡禮 ＆ 太宰府天滿宮參拜</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li><strong>表參道亮點：</strong>品嚐現烤熱騰騰「梅枝餅」（外脆內軟紅豆餡，名店如「かさの家」）、打卡隈研吾大師設計的木條交錯「星巴克太宰府天滿宮表參道店」。</li>
+                            <li><strong>太宰府天滿宮「令和仮殿」：</strong>本殿正進行 1200 年大修，特別建造由建築大師藤本壯介設計的「屋頂浮動森林假殿」，綠意盎然，為百年難得一遇之建築奇景。摸御神牛祈求兩位孩子學業進步。</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">12:30 - 13:45 ｜ 太宰府特色午餐</div>
+                    <div class="timeline-content">
+                        推薦品嚐「一蘭拉麵 太宰府參道店」獨有的<strong>五角形「合格拉麵」</strong>（象徵考試合格、麵條長度更長），極具儀式感且深受青少年喜愛。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">13:45 - 16:00 ｜ 九州國立博物館 (科技與亞洲歷史)</div>
+                    <div class="timeline-content">
+                        從天滿宮經由彩虹手扶梯隧道直達國立博物館。玻璃弧形巨型建築震撼人心，常設展「文化交流展」結合高科技互動觸控屏幕，一樓「Ajippa」體驗區可免費觸摸亞洲各國傳統服飾與樂器，互動性極高。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">16:30 - 18:00 ｜ 返回博多市區 ➔ 天神/博多運河城</div>
+                    <div class="timeline-content">
+                        搭乘太宰府旅人巴士返回博多。傍晚可漫步博多運河城欣賞水舞秀，或採買日本藥妝。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">20:30 - 22:00 ｜ ★ 關鍵執行：行李封箱與背包分流 SOP</div>
+                    <div class="timeline-content">
+                        <div class="danger-box">
+                            <strong>🧳 明日 1/27 前往豪斯登堡「行李分流三大原則」：</strong><br>
+                            1. <strong>大行李箱（24-29吋）：</strong>放入前 6 天戰利品與非必需衣物，拉鍊拉好上鎖，準備留在博多。<br>
+                            2. <strong>2天1夜隨身行李（每人1後背包 或 1個20吋輕便小登機箱）：</strong>僅裝 1/27-1/28 所需之換洗衣物、發熱衣、盥洗用品、手機充電器、常備藥與保暖手套圍巾。<br>
+                            3. 確保護照、JR Pass/車票兌換券隨身攜帶。
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a class="back-to-top" href="#overview">↑ 回到行程總覽</a>
+        </div>
+
+        <!-- Day 7 詳細 -->
+        <div class="deep-card" id="deep-day7">
+            <div class="deep-card-title">
+                <span>Day 7：1/27 (三) 特急直達豪斯登堡 ＆ 白銀世界夜間光影</span>
+                <span class="tag tag-blue">樂園夢幻日</span>
+            </div>
+
+            <div class="grid-2">
+                <div class="mini-card">
+                    <h4>🧳 大行李最佳解決方案 (三擇一)</h4>
+                    <ul>
+                        <li><strong>方案 A（博多車站置物櫃 - 推薦）：</strong> 07:45 拖至博多站筑紫口/中央改札口，存入特大型置物櫃（約 800-1000円/日，跨夜加計1日），憑 Suica/IC 卡開鎖。</li>
+                        <li><strong>方案 B（1/28新飯店預寄）：</strong> 若 1/28 訂博多站前傳統飯店，07:30 先去前台寄放明天才入住的行李。</li>
+                        <li><strong>方案 C（黑貓宅急便）：</strong> 1/26 晚上至超商寄送至 1/28 飯店。</li>
+                    </ul>
+                </div>
+                <div class="mini-card">
+                    <h4>🎟️ 豪斯登堡官方飯店票券神技</h4>
+                    <ul>
+                        <li><strong>第一天：</strong>購買「1DAY Passport」全日入園。</li>
+                        <li><strong>第二天（免費）：</strong>憑官方直營飯店住宿證明，至前台免費領取<strong>「翌日 1DAY Passport」</strong>（直接省下全家第2天 20,000+ 日圓門票！）。</li>
+                        <li><strong>行李直送：</strong>迎賓大門「場內飯店行李櫃檯」免費直達房間。</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">07:45 - 08:20 ｜ 退房、寄放大行李、進站候車</div>
+                    <div class="timeline-content">
+                        從メルベーユ博多退房，前往博多車站寄存大行李箱，至 JR 綠色窗口/指定席售票機領取特急車票，在 3/4 號月台候車。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">08:36 - 10:22 ｜ 搭乘 JR 特急「豪斯登堡 9 號」直達</div>
+                    <div class="timeline-content">
+                        全車直達「JR ハウステンボス站」（無需轉乘，車程 1 小時 46 分鐘）。在車上欣賞九州鄉村與大村灣海景。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">10:25 - 10:55 ｜ 搭乘免費接駁車 ➔ 鹿特丹飯店寄物 ➔ 專屬閘門入園</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li><strong>過橋與搭車：</strong>JR 豪斯登堡站出站步行 3 分鐘過入國大橋，至 Welcome Gate 迎賓大門前的<strong>「飯店宿泊者專用免費巴士乘車處」</strong>（場內飯店行李寄放處前）。</li>
+                            <li><strong>搭乘接駁車：</strong>搭乘鹿特丹飯店免費接駁巴士（免門票即可搭乘，每 20～30 分鐘一班，車程約 5 分鐘直達飯店門口；亦可步行約 7 分鐘）。👉 <a href="https://www.huistenbosch.co.jp/access/pdf/busguide.pdf" target="_blank" rel="noopener noreferrer" style="color:#2980b9; font-weight:bold;">點此開啟官方接駁車即時時刻表 (busguide.pdf)</a></li>
+                            <li><strong>行李寄放：</strong>鹿特丹飯店無法在迎賓門託運行李，請將 2 天 1 夜隨身行李寄放於飯店大廳的<strong>「住宿客專用免費投幣式寄物櫃」</strong>。</li>
+                            <li><strong>專屬閘門入園：</strong>放好行李後，直接從飯店旁的<strong>「冒險公園專屬閘門（Adventure Park Gate）」</strong>購買 1DAY Passport 並驗票入園，完全不必折返迎賓大門！</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">11:00 - 15:30 ｜ 白天戶外大冒險 ＆ 經典地標攻略</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li><strong>天空之城（天空の城）：</strong>日本最大級戶外高空繩索挑戰，分 3m、6m、9m 難度，極具青少年冒險挑戰感。</li>
+                            <li><strong>流星滑索（シューティングスター）：</strong>橫跨 300 公尺運河的高空滑索，刺激度滿分。</li>
+                            <li><strong>泰迪熊王國 ＆ 風車花之道路：</strong>拍照打卡歐洲荷蘭風情。</li>
+                            <li><strong>德姆特倫高塔（Domtoren）：</strong>搭乘電梯直達 80 公尺展望台，360 度俯瞰整個豪斯登堡園區與大村灣。</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">15:30 - 17:30 ｜ 飯店 Check-in 稍作休息 ＆ 港灣散策</div>
+                    <div class="timeline-content">
+                        前往飯店辦理入住手續，行李已在房內。房間稍作休整，補充體力，穿戴好圍巾與手套準備迎接低溫夜景。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">17:45 - 20:30 ｜ 白銀世界點燈、光之王國 ＆ 3D 光雕秀</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li><strong>白銀世界點燈儀式（阿姆斯特丹廣場）：</strong>在悠揚歌聲中數千萬盞銀白 LED 瞬間點亮，壯觀無比。</li>
+                            <li><strong>光之運河遊艇（Canal Cruiser of Light）：</strong>夜間搭船，船底劃過水面伴隨水下彩燈與噴泉秀。</li>
+                            <li><strong>3D 光雕投影秀 ＆ 光之摩天輪：</strong>從夜空高處俯瞰全球最大級 1300 萬顆燈泡的光之王國。</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">21:00 ｜ 步行回飯店悠閒就寢</div>
+                    <div class="timeline-content">
+                        因為住在園區飯店，散場時完全不用擠車趕電車，直接漫步回房享受寧靜歐式夜晚。
+                    </div>
+                </div>
+            </div>
+            <a class="back-to-top" href="#overview">↑ 回到行程總覽</a>
+        </div>
+
+        <!-- Day 8 詳細 -->
+        <div class="deep-card" id="deep-day8">
+            <div class="deep-card-title">
+                <span>Day 8：1/28 (四) 豪斯登堡科技沉浸 ➔ 重返福岡博多</span>
+                <span class="tag tag-green">科技娛樂 ＆ 圓滿返程日</span>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">08:30 - 09:45 ｜ 歐式早餐 ＆ 飯店退房（行李逆向託運）</div>
+                    <div class="timeline-content">
+                        在飯店享用豐盛早餐。辦理退房時，將 2 天 1 夜隨身行李交給飯店前台辦理<strong>「退房行李運送至迎賓門服務（お帰り手荷物配送サービス）」</strong>。前台同時兌換今日的<strong>免費 1DAY 護照</strong>。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">10:00 - 15:30 ｜ 沉浸科技 ＆ VR 設施高效率攻略</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li><strong>Mission Deep Sea（深海任務）：</strong>2024 年全新頂級沉浸式深海探險設施，視覺震動逼真感十足。</li>
+                            <li><strong>VR 激流泛舟（VRラフティング）：</strong>全方位動態座椅搭配 VR 眼鏡，在激流與恐龍世界中穿梭。</li>
+                            <li><strong>洪水來襲冒險館（Horizon Adventure）：</strong>使用 800 噸真實水流的動態災難劇場。</li>
+                            <li><strong>Miffy 米飛兔專區（nijntje）：</strong>全球最大米飛兔專賣店與主題咖啡廳，品嚐超萌午餐或甜點。</li>
+                            <li><strong>長崎蛋糕名店街：</strong>在入國前的 Castella 之城試吃並採買長崎原味蜂蜜蛋糕。</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">15:45 - 16:30 ｜ 出園取行李 ➔ 搭乘接駁車返抵迎賓門 ➔ JR車站</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li><strong>出園與取物：</strong>從冒險公園閘門出園回到鹿特丹飯店，從免費置物櫃取出隨身行李。</li>
+                            <li><strong>接駁返程：</strong>於飯店門口搭乘<strong>免費接駁巴士（車程約 5 分鐘，每 20～30 分鐘一班）</strong>或沿步道步行 7 分鐘返抵迎賓門。👉 <a href="https://www.huistenbosch.co.jp/access/pdf/busguide.pdf" target="_blank" rel="noopener noreferrer" style="color:#2980b9; font-weight:bold;">點此開啟官方接駁車即時時刻表 (busguide.pdf)</a></li>
+                            <li><strong>步行至 JR 車站：</strong>過入國大橋步行 3～5 分鐘抵達 JR 豪斯登堡車站，準備搭乘特急列車。</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">16:45 - 18:35 (或 17:48 - 19:35) ｜ JR 特急返抵博多</div>
+                    <div class="timeline-content">
+                        搭乘直達特急「豪斯登堡 42 號」（16:45 發車 ➔ 18:35 抵達博多）或「豪斯登堡 46 號」（17:48 發車 ➔ 19:35 抵達博多）。
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-time">18:45 - 20:00 ｜ 取大行李 ＆ 入住博多新飯店</div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li>若採方案 A：於博多站置物櫃取出前天寄存的大行李箱。</li>
+                            <li>前往 1/28-1/30 博多新飯店辦理 Check-in（推薦：都飯店博多、JR九州Blossom博多中央、Forza博多等步行5分鐘內且有24小時前台之飯店）。</li>
+                            <li>晚餐於博多車站筑紫口居酒屋或一風堂/名代拉麵街道悠閒享用。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <a class="back-to-top" href="#overview">↑ 回到行程總覽</a>
+        </div>
+
+        <!-- 關鍵時程 Action Items -->
+        <div class="deep-card">
+            <div class="deep-card-title">
+                <span>📋 行前關鍵預約與待辦時程表 (Action Items)</span>
+                <span class="tag tag-amber">重要時程</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>執行時間點</th>
+                        <th>事項</th>
+                        <th>說明與建議</th>
+                        <th>狀態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>已完成</strong></td>
+                        <td>預訂 1/27 豪斯登堡飯店</td>
+                        <td>已成功預訂<strong>官方直營「鹿特丹飯店」（Hotel Rotterdam）</strong>，享有「隔日免費 1DAY Passport」特典；注意不適用迎賓門行李直送，需搭乘<strong>免費接駁車（約5分）</strong>至飯店寄放免費置物櫃。</td>
+                        <td><span class="tag tag-green">已訂</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>即日起</strong></td>
+                        <td>預訂 1/28-1/30 博多飯店 (2晚)</td>
+                        <td>選擇博多車站筑紫口或博多口<strong>步行 3-5 分鐘內、具 24 小時前台</strong>之飯店，方便 1/27 預寄行李或 1/28 出站後快速入住。</td>
+                        <td><span class="tag tag-amber">待訂房</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>2026 年 10-11 月</strong></td>
+                        <td>預訂 1/25 九重滑雪一日遊專車</td>
+                        <td>密切關注 JET 旅行（ジェット旅行）、Orion Tour 或 Klook 的福岡出發九重滑雪專車，選擇「往返巴士＋雪地入場＋雪具/雪橇」方案。</td>
+                        <td><span class="tag tag-blue">行事曆提醒</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>2026/12/27 (乘車日前1個月) 10:00</strong></td>
+                        <td>JR 九州特急列車劃位</td>
+                        <td>上 JR 九州官網或購票系統劃位 1/27 去程（特急豪斯登堡 9 號 08:36）與 1/28 返程（特急豪斯登堡 42 號 16:45）指定席。</td>
+                        <td><span class="tag tag-blue">行事曆提醒</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>2027/1/20 前</strong></td>
+                        <td>雪地保暖衣物盤點</td>
+                        <td>準備防風防水外套、發熱衣（2層）、毛帽、防水手套、防滑保暖襪、太陽眼鏡（防雪盲）與暖暖包。</td>
+                        <td><span class="tag tag-blue">行前整備</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <a class="back-to-top" href="#overview">↑ 回到行程總覽</a>
+        </div>
     </div>
 
     <p style="text-align:center; margin-top:36px;">
