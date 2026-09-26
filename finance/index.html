@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🏦 老錢撤美債預警儀表板</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#172033;--muted:#657085;--line:#dfe4ec;--green:#16835b;--yellow:#c58a00;--orange:#d96b00;--red:#c53b3b;--blue:#3167c9}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif}
+main{max-width:1180px;margin:auto;padding:28px 18px 60px}.hero{background:linear-gradient(135deg,#111827,#26354f);color:white;border-radius:20px;padding:28px 30px;margin-bottom:18px}
+h1{margin:0 0 8px;font-size:30px}.subtitle{color:#d6deeb;line-height:1.65}.bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+button{border:0;border-radius:10px;padding:10px 15px;background:#fff;color:#172033;font-weight:700;cursor:pointer}.small{font-size:12px;color:#d6deeb;margin-top:10px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 4px 16px #1720330a}.label{font-size:13px;color:var(--muted)}.value{font-size:28px;font-weight:800;margin:6px 0}.meta{font-size:12px;color:var(--muted)}.signal{display:inline-block;margin-top:10px;padding:4px 9px;border-radius:999px;font-size:12px;font-weight:800}.green{background:#e5f6ee;color:var(--green)}.yellow{background:#fff5d9;color:var(--yellow)}.orange{background:#fff0df;color:var(--orange)}.red{background:#fde8e8;color:var(--red)}
+section{margin-top:18px}.section-title{font-size:20px;font-weight:800;margin:0 0 10px}.chart{width:100%;height:320px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px}.chart svg{width:100%;height:100%}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.note{line-height:1.7;color:#445066}.score{font-size:48px;font-weight:900}.scorebox{display:flex;align-items:center;gap:22px}.meter{height:15px;background:#e8ebf0;border-radius:99px;overflow:hidden;margin:12px 0}.meter>div{height:100%;width:45%;background:linear-gradient(90deg,#16835b,#c58a00,#d96b00,#c53b3b)}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}th,td{padding:10px 11px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}th{background:#f0f3f8}.footer{font-size:12px;color:var(--muted);line-height:1.7}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}@media(max-width:520px){.grid{grid-template-columns:1fr}.hero{padding:22px}.value{font-size:24px}}
+</style>
+</head>
+<body>
+<a href="../" style="position:fixed;top:14px;left:14px;z-index:9;background:#fffffff2;border:1px solid #dfe4ec;border-radius:999px;padding:6px 14px;text-decoration:none;color:#172033;font-weight:700;font-size:.9rem;box-shadow:0 3px 10px #1720331a;">← 回首頁</a>
+<main>
+<div class="hero">
+<h1>🏦 老錢撤美債預警儀表板</h1>
+<div class="subtitle">用 Foreign Official Treasury custody、TIC、Treasury auction、美元與黃金，判斷「老錢是否有系統性降低美債曝險」。這不是美債漲跌預測模型。</div>
+<div class="bar"><button onclick="refreshLive()">↻ 更新每日市場資料</button><button onclick="window.print()">列印 / 存成 PDF</button></div>
+<div class="small" id="updated">資料基準：2026-09-26；按下更新後會嘗試從 FRED 取得最新 DXY / Fed custody / Gold 資料。</div>
+</div>
+
+<section>
+<div class="card scorebox">
+<div><div class="label">目前老錢撤美債預警分數</div><div class="score" id="score">45/100</div><span class="signal orange">🟠 結構性警訊</span></div>
+<div class="note">目前最值得注意的是 Fed custody 長期下降；但 TIC 官方長債流量仍為正、10Y/30Y auction indirect demand 尚未崩落，因此尚不足以確認「全面撤退」。</div>
+</div>
+<div class="meter"><div id="meter"></div></div>
+</section>
+
+<section>
+<div class="section-title">核心指標</div>
+<div class="grid">
+<div class="card"><div class="label">Fed Foreign Official Treasury custody</div><div class="value" id="custody">$2.595T</div><div class="meta" id="custodyMeta">2026/8 · 月資料</div><span class="signal orange">🟠 下降</span></div>
+<div class="card"><div class="label">TIC 官方長期證券淨流量</div><div class="value">+$44.4B</div><div class="meta">2026/7 · 最新可用月資料</div><span class="signal green">🟢 仍淨買入</span></div>
+<div class="card"><div class="label">10Y Indirect bidder</div><div class="value">79.2%</div><div class="meta">2026/9/9 auction</div><span class="signal green">🟢 高</span></div>
+<div class="card"><div class="label">30Y Indirect bidder</div><div class="value">79.5%</div><div class="meta">2026/9/10 auction</div><span class="signal green">🟢 高</span></div>
+<div class="card"><div class="label">外國 Treasury Bills</div><div class="value">+$38.8B</div><div class="meta">2026/7 月變化</div><span class="signal green">🟢 增加</span></div>
+<div class="card"><div class="label">30Y Treasury yield</div><div class="value">5.24%</div><div class="meta">2026/9/4（頁面內建基準）</div><span class="signal orange">🟠 長端壓力</span></div>
+<div class="card"><div class="label">Nominal Broad USD Index</div><div class="value" id="dxy">119.51</div><div class="meta" id="dxyMeta">FRED DTWEXBGS · 2026/9/18</div><span class="signal yellow">🟡</span></div>
+<div class="card"><div class="label">Gold</div><div class="value" id="gold">—</div><div class="meta" id="goldMeta">FRED Gold series · 自動更新</div><span class="signal orange">🟠</span></div>
+</div>
+</section>
+
+<section>
+<div class="section-title">2024–2026 Fed custody 趨勢</div>
+<div class="chart"><svg id="custodyChart" viewBox="0 0 900 300" preserveAspectRatio="none"></svg></div>
+</section>
+
+<section>
+<div class="two">
+<div class="card"><div class="section-title">如何解讀</div>
+<div class="note">
+<b>🟢 正常：</b> custody 穩定、TIC 官方淨買入、auction indirect 高。<br>
+<b>🟡 注意：</b> custody 連續下降 3 個月。<br>
+<b>🟠 資產重新配置：</b> custody ↓ + 官方長債流量轉負 + Bills ↑。<br>
+<b>🔴 高可信度撤退：</b> custody ↓↓↓、TIC 官方賣出、10Y/30Y indirect 同時跌破約 65%，長端殖利率↑、DXY↓、Gold↑，且持續數月。
+</div></div>
+<div class="card"><div class="section-title">目前判讀</div>
+<div class="note"><b>🟠 45/100</b><br><br>
+目前是「需要追蹤」而不是「確認撤退」。Fed custody 從 2024 年底 $2.869T 降到 2026/8 $2.595T，但 2026/7 TIC 官方長期證券仍淨買入 $44.4B；近期 10Y、30Y auction 的 indirect allocation 也仍在約 79%。</div></div>
+</div>
+</section>
+
+<section>
+<div class="section-title">資料來源與更新頻率</div>
+<table>
+<thead><tr><th>資料</th><th>來源</th><th>Series / 資料</th><th>頻率</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td>TIC</td><td>U.S. Treasury</td><td>Monthly TIC / Foreign Official Transactions</td><td>月</td><td>判斷官方機構淨買賣</td></tr>
+<tr><td>Foreign official custody</td><td>Federal Reserve</td><td>Table 3.13 / H.4.1</td><td>月 / 週</td><td>判斷官方帳戶 Treasury custody</td></tr>
+<tr><td>Fed custody weekly</td><td>FRED / Federal Reserve</td><td>WMTSECL1</td><td>週</td><td>較即時追蹤官方 custody</td></tr>
+<tr><td>Treasury auction</td><td>U.S. Treasury / TreasuryDirect</td><td>10Y / 30Y auction results</td><td>拍債日</td><td>觀察 Indirect Bidder</td></tr>
+<tr><td>USD</td><td>Federal Reserve / FRED</td><td>DTWEXBGS</td><td>日</td><td>美元方向交叉驗證</td></tr>
+<tr><td>Gold</td><td>FRED</td><td>GOLDAMGBD228NLBM</td><td>日</td><td>非美元儲備資產交叉驗證</td></tr>
+<tr><td>U.S. Treasury yield</td><td>U.S. Treasury</td><td>Daily Treasury Par Yield Curve</td><td>日</td><td>觀察長端壓力</td></tr>
+</tbody>
+</table>
+</section>
+
+<section class="footer">
+<b>資料限制：</b>「Fed custody 下降」不能單獨證明外國央行賣出 Treasury。TIC 也有 custody / 最終所有權歸屬限制。Treasury auction 的 Indirect Bidder 並不等於純粹的外國央行，因此本儀表板採「多訊號交叉確認」，不把單一指標當作撤退證據。<br><br>
+<b>官方連結：</b>
+<a href="https://home.treasury.gov/data/treasury-international-capital-tic-system" target="_blank">U.S. Treasury TIC</a> ·
+<a href="https://www.federalreserve.gov/data/intlsumm/forassets20260930.htm" target="_blank">Federal Reserve Table 3.13</a> ·
+<a href="https://fred.stlouisfed.org/series/WMTSECL1" target="_blank">FRED WMTSECL1</a> ·
+<a href="https://fred.stlouisfed.org/series/DTWEXBGS" target="_blank">FRED DTWEXBGS</a> ·
+<a href="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView" target="_blank">Treasury Daily Rates</a> ·
+<a href="https://www.treasurydirect.gov/" target="_blank">TreasuryDirect</a>
+</section>
+</main>
+
+<script>
+const custody=[["2024 YE",2.869385],["2025 YE",2.713888],["2026 Feb",2.775373],["2026 Mar",2.717909],["2026 Apr",2.725241],["2026 May",2.665990],["2026 Jun",2.616059],["2026 Jul",2.634150],["2026 Aug",2.594865]];
+function lineChart(id, data){
+ const s=document.getElementById(id), W=900,H=300,p={l:55,r:20,t:20,b:42};
+ const vals=data.map(x=>x[1]), min=Math.min(...vals)*.98,max=Math.max(...vals)*1.01;
+ const x=i=>p.l+i*(W-p.l-p.r)/(data.length-1), y=v=>p.t+(max-v)*(H-p.t-p.b)/(max-min);
+ let out=`<rect width="900" height="300" fill="white"/><line x1="${p.l}" y1="${H-p.b}" x2="${W-p.r}" y2="${H-p.b}" stroke="#dfe4ec"/>`;
+ out+=`<text x="10" y="28" font-size="12" fill="#657085">USD trillions</text>`;
+ let pts=data.map((d,i)=>`${x(i)},${y(d[1])}`).join(" ");
+ out+=`<polyline points="${pts}" fill="none" stroke="#3167c9" stroke-width="3"/>`;
+ data.forEach((d,i)=>{out+=`<circle cx="${x(i)}" cy="${y(d[1])}" r="4" fill="#3167c9"/><text x="${x(i)}" y="${H-15}" text-anchor="middle" font-size="10" fill="#657085">${d[0]}</text>`});
+ out+=`<text x="${W-120}" y="${y(vals.at(-1))-12}" font-size="12" fill="#172033">${vals.at(-1).toFixed(3)}T</text>`;
+ s.innerHTML=out;
+}
+lineChart("custodyChart",custody);
+
+async function fred(series){
+ const url=`https://fred.stlouisfed.org/graph/fredgraph.csv?id=${series}`;
+ const r=await fetch(url,{cache:"no-store"}); if(!r.ok) throw Error(series);
+ const t=await r.text(), rows=t.trim().split(/\r?\n/).slice(1);
+ for(let i=rows.length-1;i>=0;i--){let a=rows[i].split(","); let v=parseFloat(a[1]); if(Number.isFinite(v)) return {date:a[0],value:v};}
+ throw Error(series);
+}
+async function refreshLive(){
+ document.getElementById("updated").textContent="正在更新 FRED 每日/每週資料…";
+ try{const d=await fred("DTWEXBGS");document.getElementById("dxy").textContent=d.value.toFixed(2);document.getElementById("dxyMeta").textContent=`FRED DTWEXBGS · ${d.date}`;}catch(e){}
+ try{const g=await fred("GOLDAMGBD228NLBM");document.getElementById("gold").textContent="$"+g.value.toFixed(2);document.getElementById("goldMeta").textContent=`FRED GOLDAMGBD228NLBM · ${g.date}`;}catch(e){document.getElementById("gold").textContent="需連線";}
+ try{const c=await fred("WMTSECL1");document.getElementById("custody").textContent="$"+(c.value/1e6).toFixed(3)+"T";document.getElementById("custodyMeta").textContent=`FRED WMTSECL1 · ${c.date} · 週資料`;}catch(e){}
+ document.getElementById("updated").textContent="最後嘗試更新："+new Date().toLocaleString("zh-TW");
+}
+</script>
+</body>
+</html>

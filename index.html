@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>🐾 旅行收藏館｜年度旅行檔案</title>
-<meta name="description" content="一年一頁的旅行檔案：2026 名古屋、2027 九州。">
+<title>🐾 收藏館｜財經 × 旅行</title>
+<meta name="description" content="兩個分類：🏦 財經儀表板、✈️ 年度旅行檔案。">
 <style>
   :root {
     --cream: #fff8ef;
@@ -91,7 +91,7 @@
     z-index: 1;
     max-width: 880px;
     margin: 0 auto;
-    padding: 48px 20px 140px;
+    padding: 56px 20px 150px;
     text-align: center;
   }
 
@@ -108,25 +108,31 @@
   }
   h1 .paw { flex: 0 0 auto; animation: bounce 2.6s ease-in-out infinite; }
   h1 .paw.flip { transform: scaleX(-1); }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    30%      { transform: translateY(-10px) rotate(-4deg); }
+    60%      { transform: translateY(0) rotate(3deg); }
+  }
   .sub {
     font-size: 1.05rem;
     color: #7a6a55;
-    margin-bottom: 52px;
+    margin-bottom: 44px;
     text-shadow: 0 1px 0 #fff;
   }
 
-  /* ---- year cards ---- */
+  /* ---- category cards ---- */
   .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 34px;
+    gap: 30px;
   }
-  .yearcard {
-    position: relative;
-    display: block;
+  .cat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     background: #fff;
     border-radius: 28px;
-    padding: 124px 24px 26px;
+    padding: 34px 26px 30px;
     text-decoration: none;
     color: var(--text);
     border: 4px solid #fff;
@@ -134,116 +140,59 @@
     box-shadow: 0 10px 24px #0000001a, 0 2px 0 #0000000d inset;
     transition: transform .25s ease, box-shadow .25s ease, outline-color .25s ease;
   }
-  .yearcard:hover {
+  .cat:hover {
     transform: translateY(-8px) rotate(-1deg);
     box-shadow: 0 18px 34px #00000026;
     outline-color: var(--pink);
   }
-  .yearcard:active { transform: translateY(-2px) scale(.98); }
-  .yearcard.y2027:hover { outline-color: var(--sky); }
+  .cat:active { transform: translateY(-2px) scale(.98); }
+  .cat.finance:hover { outline-color: var(--mint); }
 
-  .yearcard .year {
-    position: absolute;
-    top: 16px; right: 16px;
-    font-size: .82rem;
-    font-weight: bold;
-    padding: 4px 12px;
-    border-radius: 999px;
-    background: var(--peach);
-    color: #8a5a1f;
+  .cat .badge {
+    font-size: 3.1rem;
+    line-height: 1;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 6px 6px #00000022);
   }
-  .yearcard.y2027 .year { background: var(--sky); color: #1d5b82; }
+  .cat.travel .badge { animation: bounce 3.2s ease-in-out infinite; }
+  .cat.finance .badge { animation: sway 3.6s ease-in-out infinite; }
+  @keyframes sway {
+    0%, 100% { transform: rotate(-6deg); }
+    50%      { transform: rotate(6deg); }
+  }
 
-  .yearcard h2 { font-size: 1.35rem; margin-bottom: 8px; line-height: 1.35; }
-  .yearcard .dates {
+  .cat h2 { font-size: 1.32rem; margin-bottom: 10px; line-height: 1.4; }
+  .cat .tag {
     display: inline-block;
-    font-size: .84rem;
+    font-size: .8rem;
     font-weight: bold;
     letter-spacing: .6px;
-    color: #8a5a1f;
-    background: #fdf1de;
     border-radius: 999px;
-    padding: 3px 14px;
+    padding: 3px 13px;
     margin-bottom: 12px;
   }
-  .yearcard.y2027 .dates { color: #1d5b82; background: #e7f3fb; }
-  .yearcard p { font-size: .92rem; color: #7a6a55; line-height: 1.65; }
+  .cat.travel .tag { background: #fdf1de; color: #8a5a1f; }
+  .cat.finance .tag { background: #e7f3fb; color: #1d5b82; }
+  .cat p { font-size: .92rem; color: #7a6a55; line-height: 1.7; }
 
   .go {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    margin-top: 18px;
+    margin-top: 20px;
     background: var(--peach);
     color: #7c4a12;
     font-weight: bold;
-    padding: 8px 22px;
+    padding: 10px 24px;
     border-radius: 999px;
     font-size: .95rem;
     box-shadow: 0 4px 0 #e0b26b;
-    transition: transform .15s ease, box-shadow .15s ease;
+    transition: transform .15s ease;
   }
-  .yearcard.y2027 .go { background: var(--sky); color: #1d5b82; box-shadow: 0 4px 0 #8ec8ea; }
-  .yearcard:hover .go { transform: translateY(-2px); }
-  .yearcard:hover .go svg { transform: translateX(3px); }
+  .cat.finance .go { background: var(--mint); color: #2d6a4f; box-shadow: 0 4px 0 #8fcdb2; }
+  .cat:hover .go { transform: translateY(-2px); }
+  .cat:hover .go svg { transform: translateX(3px); }
   .go svg { transition: transform .2s ease; }
-
-  /* ---- chips: quick links inside a year ---- */
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-    margin-top: 16px;
-  }
-  .chips a {
-    font-size: .82rem;
-    text-decoration: none;
-    color: #7a6a55;
-    background: #fff6ea;
-    border: 1px solid #f0dfc8;
-    padding: 5px 12px;
-    border-radius: 999px;
-    transition: background .2s ease, color .2s ease;
-  }
-  .chips a:hover { background: var(--mint); color: #2d6a4f; border-color: #a8dfc6; }
-  .yearcard.y2027 .chips a { background: #eef7fd; border-color: #d3e9f7; }
-  .yearcard.y2027 .chips a:hover { background: var(--sky); color: #1d5b82; border-color: #a5d8f2; }
-
-  /* ---- animals ---- */
-  .animal {
-    position: absolute;
-    top: -78px;
-    left: 50%;
-    width: 124px;
-    height: 124px;
-    filter: drop-shadow(0 8px 8px #00000022);
-  }
-  .animal svg { width: 100%; height: 100%; display: block; }
-  .animal.bear   { animation: sway 3.6s ease-in-out infinite; }
-  .animal.penguin{ animation: bounce 2.8s ease-in-out infinite; }
-
-  @keyframes bounce {
-    0%, 100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
-    30%      { transform: translateX(-50%) translateY(-14px) rotate(-3deg); }
-    60%      { transform: translateX(-50%) translateY(0) rotate(2deg); }
-  }
-  @keyframes sway {
-    0%, 100% { transform: translateX(-50%) rotate(-5deg); }
-    50%      { transform: translateX(-50%) rotate(5deg); }
-  }
-  .ear, .scarf { transform-box: fill-box; }
-  .ear   { animation: earwig 2.8s ease-in-out infinite; transform-origin: bottom center; }
-  .scarf { animation: scarfflap 2.4s ease-in-out infinite; transform-origin: left center; }
-  @keyframes earwig {
-    0%, 100% { transform: rotate(0deg); }
-    35%      { transform: rotate(-12deg); }
-    65%      { transform: rotate(5deg); }
-  }
-  @keyframes scarfflap {
-    0%, 100% { transform: rotate(-6deg); }
-    50%      { transform: rotate(10deg); }
-  }
 
   footer {
     margin-top: 50px;
@@ -260,8 +209,8 @@
   @media (max-width: 520px) {
     h1 { font-size: 1.7rem; gap: 8px; }
     h1 .paw { width: 26px; height: 26px; }
-    .animal { width: 104px; height: 104px; top: -66px; }
-    .yearcard { padding-top: 104px; }
+    .wrap { padding-top: 44px; }
+    .cat .badge { font-size: 2.6rem; }
   }
 </style>
 </head>
@@ -286,7 +235,7 @@
         <circle cx="30.5" cy="14" r="4.6" fill="#c98f62"/>
         <circle cx="20" cy="21" r="3" fill="#e8b48c" opacity=".6"/>
       </svg>
-      旅行收藏館
+      收藏館
       <svg class="paw flip" viewBox="0 0 40 40" width="36" height="36" aria-hidden="true">
         <ellipse cx="20" cy="27" rx="10.5" ry="8.5" fill="#c98f62"/>
         <circle cx="9.5" cy="14" r="4.6" fill="#c98f62"/>
@@ -295,114 +244,35 @@
         <circle cx="20" cy="21" r="3" fill="#e8b48c" opacity=".6"/>
       </svg>
     </h1>
-    <p class="sub">一年一頁，選一個年份，打開那段旅程 ✨</p>
+    <p class="sub">兩個分類，選一個開始逛 ✨</p>
 
     <div class="cards">
 
-      <!-- ===== 2026（已封存） ===== -->
-      <div class="yearcard y2026">
-        <span class="year">2026 · 已封存</span>
-        <div class="animal bear" aria-hidden="true">
-          <svg viewBox="0 0 130 130">
-            <g class="ear">
-              <circle cx="38" cy="30" r="15" fill="#b97f55"/>
-              <circle cx="38" cy="30" r="7.5" fill="#f3d2ac"/>
-            </g>
-            <g class="ear">
-              <circle cx="92" cy="30" r="15" fill="#b97f55"/>
-              <circle cx="92" cy="30" r="7.5" fill="#f3d2ac"/>
-            </g>
-            <ellipse cx="65" cy="66" rx="44" ry="40" fill="#c98f62"/>
-            <ellipse cx="65" cy="80" rx="21" ry="16" fill="#f6dfc2"/>
-            <circle cx="48" cy="60" r="5" fill="#3f2d20"/>
-            <circle cx="82" cy="60" r="5" fill="#3f2d20"/>
-            <circle cx="50.5" cy="57.5" r="1.8" fill="#fff"/>
-            <circle cx="84.5" cy="57.5" r="1.8" fill="#fff"/>
-            <ellipse cx="65" cy="74" rx="6.5" ry="5" fill="#3f2d20"/>
-            <path d="M65 79 q-7 7 -13 4.5" stroke="#3f2d20" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-            <path d="M65 79 q7 7 13 4.5" stroke="#3f2d20" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-            <circle cx="33" cy="72" r="5.5" fill="#ff9f9f" opacity=".65"/>
-            <circle cx="97" cy="72" r="5.5" fill="#ff9f9f" opacity=".65"/>
-            <g>
-              <rect x="47" y="102" width="36" height="20" rx="6" fill="#f2a24e"/>
-              <rect x="47" y="100" width="36" height="7" rx="3.5" fill="#d97f2a"/>
-              <path d="M53 104 q3 9 0 14" stroke="#f7c98a" stroke-width="3" fill="none" stroke-linecap="round"/>
-              <path d="M77 104 q-3 9 0 14" stroke="#f7c98a" stroke-width="3" fill="none" stroke-linecap="round"/>
-              <g transform="translate(65,113)">
-                <circle cx="-3.5" cy="-2" r="3" fill="#fff"/>
-                <circle cx="3.5" cy="-2" r="3" fill="#fff"/>
-                <path d="M-6 -1 L6 -1 L6 1.5 L0 7 L-6 1.5 Z" fill="#fff"/>
-              </g>
-            </g>
-          </svg>
-        </div>
-        <h2>2026 名古屋 9 日遊</h2>
-        <p class="dates">2026/8/8 – 8/16</p>
-        <p>高山、古川、郡上到名古屋的美食地圖與行程手帳，小熊已經全部收進檔案櫃。</p>
-        <a class="go" href="2026/">打開 2026 檔案
+      <!-- ===== 旅行 ===== -->
+      <a class="cat travel" href="travel/">
+        <div class="badge" aria-hidden="true">✈️</div>
+        <h2>旅行收藏館</h2>
+        <span class="tag">2026 · 2027</span>
+        <p>一年一頁的旅行檔案：2026 名古屋 9 日遊、2027 九州 10 天 9 夜的行程、交通與美食地圖。</p>
+        <span class="go">打開旅行收藏館
           <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
             <path d="M3 10 h12 m-5 -5 l5 5 l-5 5" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-        </a>
-        <div class="chips">
-          <a href="2026/plan/food-map.html">🍜 美食地圖</a>
-          <a href="2026/ref/2026%E5%90%8D%E5%8F%A4%E5%B1%8B10%E6%97%A5%E9%81%8A(%E8%A1%8C%E7%A8%8B-%E7%84%A1%E6%A8%82%E9%AB%98%E6%94%BB%E7%95%A5).html">📖 行程手帳</a>
-          <a href="2026/ref/10%E6%97%A5%E9%81%8A%E8%A1%8C%E7%A8%8B-%E7%BE%8E%E9%A3%9F%E5%9C%B0%E5%9C%96.html">🗺️ 行程美食地圖</a>
-        </div>
-      </div>
+        </span>
+      </a>
 
-      <!-- ===== 2027（新計畫） ===== -->
-      <div class="yearcard y2027">
-        <span class="year">2027 · 規劃中</span>
-        <div class="animal penguin" aria-hidden="true">
-          <svg viewBox="0 0 130 130">
-            <!-- body -->
-            <ellipse cx="65" cy="74" rx="42" ry="46" fill="#3f4a5a"/>
-            <ellipse cx="65" cy="80" rx="28" ry="36" fill="#fdfaf4"/>
-            <!-- wings -->
-            <ellipse cx="24" cy="76" rx="9" ry="20" fill="#33404f" transform="rotate(-12 24 76)"/>
-            <ellipse cx="106" cy="76" rx="9" ry="20" fill="#33404f" transform="rotate(12 106 76)"/>
-            <!-- head highlight -->
-            <ellipse cx="65" cy="44" rx="30" ry="28" fill="#44515f"/>
-            <!-- eyes -->
-            <circle cx="54" cy="60" r="5" fill="#2b333d"/>
-            <circle cx="76" cy="60" r="5" fill="#2b333d"/>
-            <circle cx="56" cy="58" r="1.8" fill="#fff"/>
-            <circle cx="78" cy="58" r="1.8" fill="#fff"/>
-            <!-- beak -->
-            <path d="M65 66 L75 74 L65 80 L55 74 Z" fill="#f2a24e"/>
-            <!-- blush -->
-            <circle cx="44" cy="70" r="5" fill="#ff9f9f" opacity=".6"/>
-            <circle cx="86" cy="70" r="5" fill="#ff9f9f" opacity=".6"/>
-            <!-- scarf -->
-            <g class="scarf">
-              <path d="M40 84 q25 12 50 0 q3 10 -4 12 q-21 9 -42 0 q-7 -2 -4 -12 Z" fill="#ff8fa3"/>
-              <path d="M38 88 q-6 12 -2 20 q6 -2 8 -14 Z" fill="#ff7f96"/>
-            </g>
-            <!-- feet -->
-            <ellipse cx="50" cy="120" rx="12" ry="7" fill="#f2a24e"/>
-            <ellipse cx="80" cy="120" rx="12" ry="7" fill="#f2a24e"/>
-            <!-- snowflake -->
-            <g stroke="#bfe6ff" stroke-width="3" stroke-linecap="round">
-              <line x1="112" y1="14" x2="112" y2="26"/>
-              <line x1="106" y1="20" x2="118" y2="20"/>
-            </g>
-          </svg>
-        </div>
-        <h2>❄️ 2027 九州 10 天 9 夜</h2>
-        <p class="dates">2027/1/21 – 1/30</p>
-        <p>福岡 teamLab、九重滑雪場、豪斯登堡，為 11 歲與 13 歲孩子量身打造的親子自由行計畫。</p>
-        <a class="go" href="2027/">打開 2027 計畫
+      <!-- ===== 財經 ===== -->
+      <a class="cat finance" href="finance/">
+        <div class="badge" aria-hidden="true">🏦</div>
+        <h2>財經儀表板</h2>
+        <span class="tag">老錢撤美債</span>
+        <p>老錢撤美債預警儀表板：用 Fed custody、TIC、拍債需求、美元與黃金，追蹤外國官方是否系統性降低美債曝險。</p>
+        <span class="go">打開財經儀表板
           <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
             <path d="M3 10 h12 m-5 -5 l5 5 l-5 5" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-        </a>
-        <div class="chips">
-          <a href="2027/#overview">🗓️ 行程總覽</a>
-          <a href="2027/#luggage">🧳 大行李轉移方案</a>
-          <a href="2027/#daily">📍 每日詳細計畫</a>
-        </div>
-      </div>
+        </span>
+      </a>
 
     </div>
 
